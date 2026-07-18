@@ -11,7 +11,11 @@
   },
   "dependencies": {
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "srt-parser-2": "^1.2.3",
+    "subsrt": "^1.1.1",
+    "subtitle": "^4.2.2",
+    "webvtt-parser": "^2.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
