@@ -1,8 +1,13 @@
 import { LANGUAGES, BTN_STYLE } from "../constants";
-
 import parseSubtitleFile from "../utils/parseSubtitleFile";
+import { useState } from "react";
+import isValidYouTubeUrl from "../utils/urlValidator";
 
 function AddForm() {
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videoUrlError, setVideoUrlError] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("");
+
   //
   function onSubmitTextareaForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -23,14 +28,32 @@ function AddForm() {
           1. Paste YouTube video URL:
         </label>
 
-        <input autoFocus id="video-url" type="url" placeholder="https://youtube.com/watch?v=..." className="w-full border border-white/30 bg-black px-4 py-2 font-mono" />
+        <input
+          autoFocus
+          id="video-url"
+          type="url"
+          value={videoUrl}
+          onChange={(e) => {
+            const urlIsValid = isValidYouTubeUrl(e.target.value);
+            if (urlIsValid) {
+              setVideoUrl(e.target.value.trim());
+              setVideoUrlError("");
+            } else {
+              setVideoUrl(e.target.value.trim());
+              setVideoUrlError("Not a valid YouTube video URL");
+            }
+          }}
+          placeholder="https://youtube.com/watch?v=..."
+          className="w-full border border-white/30 bg-black px-4 py-2 font-mono"
+        />
+        <div className="text-red-500 ml-2 text-sm my-2">{videoUrlError}</div>
       </div>
 
       {/* LANGUAGE SELECT */}
       <div className="max-w-xl mx-auto px-6 mb-8">
         <label className="mb-2 block text-sm text-[cyan]">2. Select language:</label>
 
-        <select className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer" defaultValue="">
+        <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)} className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer">
           <option disabled value="">
             null
           </option>
@@ -55,15 +78,16 @@ function AddForm() {
             id="file-upload"
             type="file"
             accept=".srt,.vtt"
+            disabled={!videoUrl || !selectedLanguage}
             onChange={async (e) => {
               const subtitles = await parseSubtitleFile(e);
               console.log("SUBTITLES:");
               console.log(subtitles);
             }}
-            className="peer sr-only"
+            className={`peer sr-only`}
           />
 
-          <label htmlFor="file-upload" className={`${BTN_STYLE} cursor-pointer peer-focus:ring-2 peer-focus:ring-blue/50`}>
+          <label htmlFor="file-upload" className={`${BTN_STYLE} cursor-pointer peer-focus:ring-2 peer-focus:ring-blue/50 peer-disabled:opacity-50 peer-disabled:cursor-not-allowed`} title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""}>
             Choose File
           </label>
         </div>
@@ -72,9 +96,11 @@ function AddForm() {
         <div className="border border-white/20 p-6 rounded transition duration-700 hover:shadow-[inset_0_0_10px_rgba(255,255,255,0.5)]">
           <h3 className="mb-6 text-lg">Paste transcript text</h3>
           <form onSubmit={(e) => onSubmitTextareaForm(e)}>
-            <textarea required className="min-h-40 w-full border border-white/30 bg-black p-3 rounded" placeholder="Paste your transcript here..." />
+            <textarea disabled={!videoUrl || !selectedLanguage} required className={`min-h-40 w-full border border-white/30 bg-black p-3 rounded ${!videoUrl || !selectedLanguage ? "disabled:opacity-50 disabled:cursor-not-allowed" : ""}`} placeholder="Paste your transcript here..." title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""} />
 
-            <button className={`${BTN_STYLE} mt-4`}>Submit</button>
+            <button disabled={!videoUrl || !selectedLanguage} className={`${BTN_STYLE} mt-4 ${!videoUrl || !selectedLanguage ? "disabled:opacity-50 disabled:cursor-not-allowed" : ""}`} title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""}>
+              Submit
+            </button>
           </form>
         </div>
       </div>
