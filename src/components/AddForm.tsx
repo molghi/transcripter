@@ -2,11 +2,12 @@ import { LANGUAGES, BTN_STYLE } from "../constants";
 import parseSubtitleFile from "../utils/parseSubtitleFile";
 import { useState } from "react";
 import isValidYouTubeUrl from "../utils/urlValidator";
+import { useAppContext } from "../context/Context.tsx";
 
 function AddForm() {
-  const [videoUrl, setVideoUrl] = useState("");
   const [videoUrlError, setVideoUrlError] = useState("");
-  const [selectedLanguage, setSelectedLanguage] = useState("");
+
+  const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName } = useAppContext();
 
   //
   function onSubmitTextareaForm(event: React.FormEvent<HTMLFormElement>) {
@@ -53,12 +54,18 @@ function AddForm() {
       <div className="max-w-xl mx-auto px-6 mb-8">
         <label className="mb-2 block text-sm text-[cyan]">2. Select language:</label>
 
-        <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)} className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer">
+        <select
+          value={selectedLanguage}
+          onChange={(e) => {
+            setSelectedLanguage(e.target.value);
+          }}
+          className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer"
+        >
           <option disabled value="">
-            null
+            none selected
           </option>
           {Object.entries(LANGUAGES).map(([code, language]) => (
-            <option key={code} title={language.name}>
+            <option key={code} title={language.name} value={code}>
               {language.flag} {language.nativeName}
             </option>
           ))}
@@ -81,8 +88,16 @@ function AddForm() {
             disabled={!videoUrl || !selectedLanguage}
             onChange={async (e) => {
               const subtitles = await parseSubtitleFile(e);
-              console.log("SUBTITLES:");
-              console.log(subtitles);
+              if (subtitles === null) {
+                setTranscriptData(null);
+              } else {
+                setTranscriptData(subtitles);
+                let videoName = subtitles.name;
+                if (videoName.includes(".srt") || videoName.includes(".vtt")) {
+                  videoName = videoName.replace(".srt", "").replace(".vtt", "");
+                }
+                setVideoName(videoName.trim());
+              }
             }}
             className={`peer sr-only`}
           />
@@ -96,7 +111,7 @@ function AddForm() {
         <div className="border border-white/20 p-6 rounded transition duration-700 hover:shadow-[inset_0_0_10px_rgba(255,255,255,0.5)]">
           <h3 className="mb-6 text-lg">Paste transcript text</h3>
           <form onSubmit={(e) => onSubmitTextareaForm(e)}>
-            <textarea disabled={!videoUrl || !selectedLanguage} required className={`min-h-40 w-full border border-white/30 bg-black p-3 rounded ${!videoUrl || !selectedLanguage ? "disabled:opacity-50 disabled:cursor-not-allowed" : ""}`} placeholder="Paste your transcript here..." title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""} />
+            <textarea disabled={!videoUrl || !selectedLanguage} required className={`min-h-30 w-full border border-white/30 bg-black p-3 rounded ${!videoUrl || !selectedLanguage ? "disabled:opacity-50 disabled:cursor-not-allowed" : ""}`} placeholder="Paste your transcript here..." title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""} />
 
             <button disabled={!videoUrl || !selectedLanguage} className={`${BTN_STYLE} mt-4 ${!videoUrl || !selectedLanguage ? "disabled:opacity-50 disabled:cursor-not-allowed" : ""}`} title={!videoUrl || !selectedLanguage ? "Video URL & language must be specified to enable this step." : ""}>
               Submit

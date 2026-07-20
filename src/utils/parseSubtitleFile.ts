@@ -1,7 +1,8 @@
 import SrtParser from "srt-parser-2";
 import { WebVTTParser } from "webvtt-parser";
+import type { TranscriptData } from "../context/Context.tsx";
 
-export default async function parseSubtitleFile(e: React.ChangeEvent<HTMLInputElement>): Promise<object | object[] | null> {
+export default async function parseSubtitleFile(e: React.ChangeEvent<HTMLInputElement>): Promise<TranscriptData | null> {
   // Get file from file picker
   const file = e.target.files?.[0];
   if (!file) return null;
@@ -15,16 +16,17 @@ export default async function parseSubtitleFile(e: React.ChangeEvent<HTMLInputEl
   let parser,
     subtitles = null;
 
+  if (extension !== "srt" && extension !== "vtt") return null;
+
   if (extension === "srt") {
     // Parse subtitle text SRT
     parser = new SrtParser();
     subtitles = parser.fromSrt(content);
-    console.log("Selected: SRT");
   } else {
     // Parse subtitle text VTT
     parser = new WebVTTParser();
     subtitles = parser.parse(content);
-    console.log("Selected: VTT");
   }
-  return subtitles;
+
+  return { format: extension, data: subtitles, name: file.name };
 }
