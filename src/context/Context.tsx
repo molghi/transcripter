@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
 
-type SrtCueShape = {
+export type SrtCueShape = {
   id: string;
   startTime: string;
   startSeconds: number;
@@ -9,7 +9,7 @@ type SrtCueShape = {
   text: string;
 };
 
-type VttCueShape = {
+export type VttCueShape = {
   direction: string;
   snapToLines: boolean;
   linePosition: string;

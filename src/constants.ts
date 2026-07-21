@@ -3,6 +3,10 @@ export const APP_NAME = "Transcripter";
 export const APP_SLOGAN = "Listen. Read. Remember.";
 
 export const LOCAL_STORAGE_KEYS = {
+  VIDEO_LANGUAGE: "video_language",
+  FILE_NAME: "file_name",
+  VIDEO_URL: "video_url",
+  TRANSCRIPT_DATA: "transcript_data",
   VOCABULARY: "transcripter_vocabulary",
 };
 

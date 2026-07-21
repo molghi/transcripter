@@ -3,6 +3,7 @@ import parseSubtitleFile from "../utils/parseSubtitleFile";
 import { useState } from "react";
 import isValidYouTubeUrl from "../utils/urlValidator";
 import { useAppContext } from "../context/Context.tsx";
+import { saveProcessedData } from "../utils/localStorageFuncs.ts";
 
 function AddForm() {
   const [videoUrlError, setVideoUrlError] = useState("");
@@ -97,6 +98,9 @@ function AddForm() {
                   videoName = videoName.replace(".srt", "").replace(".vtt", "");
                 }
                 setVideoName(videoName.trim());
+
+                let cuesArr = subtitles.format === "srt" ? subtitles.data : subtitles.data.cues;
+                saveProcessedData(videoUrl, selectedLanguage, videoName.trim(), cuesArr); // to localStorage
               }
             }}
             className={`peer sr-only`}
