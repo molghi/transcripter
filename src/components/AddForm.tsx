@@ -1,9 +1,10 @@
-import { LANGUAGES, BTN_STYLE } from "../constants";
+import { LANGUAGES, BTN_STYLE, APP_NAME, APP_SLOGAN } from "../constants";
 import parseSubtitleFile from "../utils/parseSubtitleFile";
 import { useState } from "react";
 import isValidYouTubeUrl from "../utils/urlValidator";
 import { useAppContext } from "../context/Context.tsx";
 import { saveProcessedData } from "../utils/localStorageFuncs.ts";
+import { useEffect } from "react";
 
 function AddForm() {
   const [videoUrlError, setVideoUrlError] = useState("");
@@ -15,6 +16,11 @@ function AddForm() {
     event.preventDefault();
     console.log("onSubmitTextareaForm");
   }
+
+  useEffect(() => {
+    // modify document title
+    document.title = `${APP_NAME} | ${APP_SLOGAN}`;
+  }, []);
 
   // ============================================================================
 

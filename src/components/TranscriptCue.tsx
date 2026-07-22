@@ -1,19 +1,22 @@
 import formatSeconds from "../utils/formatSeconds.ts";
 import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
 
-type Props = { cue: SrtCueShape | VttCueShape; index: number; type: "srt" | "vtt" };
+type Props = {
+  cue: SrtCueShape | VttCueShape;
+  index: number;
+  type: "srt" | "vtt";
+  activeCue: number | null;
+  setActiveCue: React.Dispatch<React.SetStateAction<number | null>>;
+};
 
-export default function TranscriptCue({ cue, index, type }: Props) {
+export default function TranscriptCue({ cue, index, type, activeCue, setActiveCue }: Props) {
   //
-  const cueActiveStyles = "border-l border-cyan-400/40 pl-4 text-white/90";
-  const cueInactiveStyles = "border-l border-white/10 pl-4 text-white/50 transition hover:border-cyan-400/40 hover:text-white";
-
   let startTime = type === "vtt" && typeof cue.startTime === "number" ? formatSeconds(cue.startTime) : cue.startTime;
   startTime = String(startTime);
   startTime = startTime.split(",")[0];
 
   return (
-    <p className={`${index === 0 ? cueActiveStyles : cueInactiveStyles}`}>
+    <p onMouseEnter={() => setActiveCue(index)} className={`border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
       <span className="mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline" title="Play at selected time">
         {startTime}
       </span>
@@ -21,3 +24,5 @@ export default function TranscriptCue({ cue, index, type }: Props) {
     </p>
   );
 }
+
+// border-cyan-400/40

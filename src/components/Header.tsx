@@ -32,7 +32,17 @@ function Header() {
       </h1>
 
       <div className="flex gap-4">
-        <button onClick={() => console.log("Show Add screen")} className={BTN_STYLE} title="Add material through file import or text input" aria-label="Add material through file import or text input">
+        <button
+          onClick={() => {
+            setVideoUrl("");
+            setSelectedLanguage("");
+            setVideoName("");
+            setTranscriptData(null);
+          }}
+          className={BTN_STYLE}
+          title="Add material through file import or text input"
+          aria-label="Add material through file import or text input"
+        >
           Add
         </button>
         <button onClick={() => restoreState()} className={BTN_STYLE} title="Restore previously saved material from local storage" aria-label="Restore previously saved material from local storage">
