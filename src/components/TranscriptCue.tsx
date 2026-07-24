@@ -2,6 +2,7 @@ import formatSeconds from "../utils/formatSeconds.ts";
 import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
 import { useAppContext } from "../context/Context.tsx";
 import { useEffect } from "react";
+import playerRef from "./YouTubePlayer.tsx";
 
 type Props = {
   cue: SrtCueShape | VttCueShape;
@@ -9,9 +10,10 @@ type Props = {
   type: "srt" | "vtt";
   activeCue: number | null;
   setActiveCue: React.Dispatch<React.SetStateAction<number | null>>;
+  setClickedCueStart: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
-export default function TranscriptCue({ cue, index, type, activeCue, setActiveCue }: Props) {
+export default function TranscriptCue({ cue, index, type, activeCue, setActiveCue, setClickedCueStart }: Props) {
   const { transcriptData, currentVideoTime } = useAppContext();
 
   //
@@ -51,9 +53,23 @@ export default function TranscriptCue({ cue, index, type, activeCue, setActiveCu
 
   return (
     <p id={`cue-${index}`} className={`border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
-      <span className="mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline" title="Play at selected time">
+      {/* START TIME */}
+      <span
+        onClick={() => {
+          if ("startSeconds" in cue) {
+            // if SRT
+            setClickedCueStart(cue.startSeconds);
+          } else {
+            // VTT
+            setClickedCueStart(cue.startTime);
+          }
+        }}
+        className="mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline active:no-underline active:opacity-75"
+        title="Play at selected time"
+      >
         {startTime}
       </span>
+      {/* TEXT */}
       <span>{cue.text}</span>
     </p>
   );

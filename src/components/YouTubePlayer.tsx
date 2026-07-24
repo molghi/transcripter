@@ -3,9 +3,10 @@ import { useAppContext } from "../context/Context.tsx";
 
 type YouTubePlayerProps = {
   videoId: string;
+  clickedCueStart: number | null;
 };
 
-export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
+export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlayerProps) {
   const videoElRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<YT.Player | null>(null);
   const { setCurrentVideoTime, setIsVideoPlaying } = useAppContext();
@@ -53,6 +54,15 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
 
     return () => clearInterval(interval);
   }, []);
+
+  // ================
+
+  // play at spec time (cue start time)
+  useEffect(() => {
+    if (!clickedCueStart) return;
+    playerRef.current?.seekTo(clickedCueStart, true);
+    playerRef.current?.playVideo();
+  }, [clickedCueStart]);
 
   // ============================================================================
 
