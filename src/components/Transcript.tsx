@@ -3,9 +3,11 @@ import { LANGUAGES, APP_NAME } from "../constants";
 import { useEffect, useState } from "react";
 import TranscriptCue from "./TranscriptCue.tsx";
 import YouTubePlayer from "./YouTubePlayer.tsx";
+import smoothScrollTo from "../utils/smoothScrollTo.ts";
 
 export default function Transcript() {
-  const { transcriptData, videoUrl, selectedLanguage, videoName } = useAppContext();
+  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying } = useAppContext();
+
   const [activeCue, setActiveCue] = useState<number | null>(0);
 
   if (!transcriptData) return null;
@@ -15,11 +17,6 @@ export default function Transcript() {
     flag = LANGUAGES[selectedLanguage as keyof typeof LANGUAGES].flag;
   }
 
-  useEffect(() => {
-    // modify document title
-    document.title = `${APP_NAME} | ${flag} ${videoName}`;
-  }, []);
-
   let youtubeID = "";
   if (videoUrl.startsWith("https://youtu.be/")) {
     youtubeID = videoUrl.split("https://youtu.be/")[1];
@@ -28,6 +25,38 @@ export default function Transcript() {
 
   const isSRT = transcriptData.format === "srt";
   const data: any[] = isSRT ? transcriptData.data : transcriptData.data.cues;
+
+  // ============================================================================
+
+  // modify document title
+  useEffect(() => {
+    document.title = `${APP_NAME} | ${flag} ${videoName}`;
+  }, []);
+
+  // ============================================================================
+
+  // auto-scroll to active cue on play
+  useEffect(() => {
+    if (!isVideoPlaying) return;
+    if (activeCue === null || activeCue < 0) return;
+
+    const element = document.getElementById(`cue-${activeCue}`);
+    if (!element) return;
+
+    const rect = element.getBoundingClientRect();
+
+    const offset = window.innerHeight * 0.4;
+
+    smoothScrollTo(window.scrollY + rect.top - offset);
+
+    // NOTE: default browser smooth-scrolling is not smooth enough in this case:
+    // window.scrollTo({
+    //   top: window.scrollY + rect.top - offset,
+    //   behavior: "smooth",
+    // });
+  }, [isVideoPlaying, activeCue]);
+
+  // ============================================================================
 
   return (
     <section className="border border-white/15 bg-black px-6 py-8 max-w-6xl mx-auto rounded font-mono">

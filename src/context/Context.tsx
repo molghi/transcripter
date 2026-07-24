@@ -65,6 +65,10 @@ type AppContextType = {
   setVideoName: React.Dispatch<React.SetStateAction<string>>;
   transcriptData: TranscriptData | null;
   setTranscriptData: React.Dispatch<React.SetStateAction<TranscriptData | null>>;
+  currentVideoTime: number;
+  setCurrentVideoTime: React.Dispatch<React.SetStateAction<number>>;
+  isVideoPlaying: boolean;
+  setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -78,8 +82,10 @@ export function AppProvider({ children }: AppProviderProps) {
   const [selectedLanguage, setSelectedLanguage] = useState("");
   const [videoName, setVideoName] = useState("");
   const [transcriptData, setTranscriptData] = useState<TranscriptData | null>(null);
+  const [currentVideoTime, setCurrentVideoTime] = useState<number>(0);
+  const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useAppContext } from "../context/Context.tsx";
 
 type YouTubePlayerProps = {
   videoId: string;
@@ -7,6 +8,7 @@ type YouTubePlayerProps = {
 export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
   const videoElRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<YT.Player | null>(null);
+  const { setCurrentVideoTime, setIsVideoPlaying } = useAppContext();
 
   // ================
 
@@ -22,9 +24,11 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.PLAYING) {
             console.log("Video is playing");
+            setIsVideoPlaying(true);
           }
           if (event.data === window.YT.PlayerState.PAUSED) {
             console.log("Video is paused");
+            setIsVideoPlaying(false);
           }
         },
       },
@@ -42,9 +46,10 @@ export default function YouTubePlayer({ videoId }: YouTubePlayerProps) {
     if (!videoElRef.current) return;
 
     const interval = setInterval(() => {
-      const currentVideoTime = playerRef.current?.getCurrentTime();
-      console.log("Current video time:", currentVideoTime);
-    }, 500);
+      const currentVideoTime = playerRef.current?.getCurrentTime() || 0;
+      // console.log("Current video time:", currentVideoTime);
+      setCurrentVideoTime(currentVideoTime);
+    }, 250);
 
     return () => clearInterval(interval);
   }, []);
