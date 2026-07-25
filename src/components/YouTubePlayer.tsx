@@ -48,7 +48,6 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
 
     const interval = setInterval(() => {
       const currentVideoTime = playerRef.current?.getCurrentTime() || 0;
-      // console.log("Current video time:", currentVideoTime);
       setCurrentVideoTime(currentVideoTime);
     }, 250);
 
@@ -57,7 +56,7 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
 
   // ================
 
-  // play at spec time (cue start time)
+  // play at specific time (=cue start time)
   useEffect(() => {
     if (!clickedCueStart) return;
     playerRef.current?.seekTo(clickedCueStart, true);

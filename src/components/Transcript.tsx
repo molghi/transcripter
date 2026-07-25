@@ -6,19 +6,20 @@ import YouTubePlayer from "./YouTubePlayer.tsx";
 import smoothScrollTo from "../utils/smoothScrollTo.ts";
 
 export default function Transcript() {
-  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying } = useAppContext();
+  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue, setActiveCue } = useAppContext();
 
-  const [activeCue, setActiveCue] = useState<number | null>(0);
   const [isScrollBtnShown, setIsScrollBtnShown] = useState<boolean>(false);
   const [clickedCueStart, setClickedCueStart] = useState<number | null>(null);
 
   if (!transcriptData) return null;
 
+  // get current lang's flag
   let flag = "";
   if (selectedLanguage) {
     flag = LANGUAGES[selectedLanguage as keyof typeof LANGUAGES].flag;
   }
 
+  // get YT ivideo video ID
   let youtubeID = "";
   if (videoUrl.startsWith("https://youtu.be/")) {
     youtubeID = videoUrl.split("https://youtu.be/")[1];
@@ -42,25 +43,21 @@ export default function Transcript() {
     if (!isVideoPlaying) return;
     if (activeCue === null || activeCue < 0) return;
 
-    const element = document.getElementById(`cue-${activeCue}`);
-    if (!element) return;
+    const activeElement = document.getElementById(`cue-${activeCue}`);
+    if (!activeElement) return;
 
-    const rect = element.getBoundingClientRect();
+    const rect = activeElement.getBoundingClientRect(); // get coords relative to viewport
 
-    const offset = window.innerHeight * 0.4;
+    const offset = window.innerHeight * 0.4; // set offset from the top
 
-    smoothScrollTo(window.scrollY + rect.top - offset);
+    smoothScrollTo(window.scrollY + rect.top - offset); // scroll to current subtitle
 
     // NOTE: default browser smooth-scrolling is not smooth enough in this case:
-    // window.scrollTo({
-    //   top: window.scrollY + rect.top - offset,
-    //   behavior: "smooth",
-    // });
   }, [isVideoPlaying, activeCue]);
 
   // ============================================================================
 
-  // to show btn to bring back to active cue
+  // to show the btn to return to active cue
   useEffect(() => {
     function handleScroll() {
       if (activeCue === null || activeCue < 0) return;
@@ -68,7 +65,7 @@ export default function Transcript() {
       const activeElement = document.getElementById(`cue-${activeCue}`);
       if (!activeElement) return;
 
-      const rect = activeElement.getBoundingClientRect();
+      const rect = activeElement.getBoundingClientRect(); // get coords relative to viewport
 
       const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
 
@@ -84,32 +81,14 @@ export default function Transcript() {
 
   return (
     <section className="border border-white/15 bg-black px-6 py-8 max-w-6xl mx-auto rounded font-mono">
-      <YouTubePlayer videoId={youtubeID} clickedCueStart={clickedCueStart} />
-
-      {isScrollBtnShown && (
-        <button
-          onClick={() => {
-            const element = document.getElementById(`cue-${activeCue}`);
-            if (!element) return;
-            const rect = element.getBoundingClientRect();
-            const offset = window.innerHeight * 0.4;
-            smoothScrollTo(window.scrollY + rect.top - offset);
-          }}
-          className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]"
-        >
-          {" "}
-          Return to current subtitle
-        </button>
-      )}
-
       <header className="mb-8 flex items-center justify-between border-b border-white/10 pb-3">
-        {/* TITLE */}
+        {/* PAGE TITLE */}
         <h2 className="text-lg uppercase tracking-[0.25em] text-white flex gap-4 items-center">
           <span className="text-4xl">{flag}</span> <span>{videoName}</span>
         </h2>
       </header>
 
-      {/* TRANSCRIPT CUES */}
+      {/* RENDER TRANSCRIPT CUES */}
       <div className="space-y-4 text-md leading-7">
         {isSRT && Array.isArray(data)
           ? data.map((cue, i) => {
@@ -121,6 +100,24 @@ export default function Transcript() {
               })
             : ""}
       </div>
+
+      <YouTubePlayer videoId={youtubeID} clickedCueStart={clickedCueStart} />
+
+      {/* BTN to return to active/current subtitle */}
+      {isScrollBtnShown && (
+        <button
+          onClick={() => {
+            const element = document.getElementById(`cue-${activeCue}`);
+            if (!element) return;
+            const rect = element.getBoundingClientRect(); // get coords relative to viewport
+            const offset = window.innerHeight * 0.4; // set offset from the top
+            smoothScrollTo(window.scrollY + rect.top - offset); // scroll to current subtitle
+          }}
+          className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]"
+        >
+          Return to current subtitle
+        </button>
+      )}
     </section>
   );
 }

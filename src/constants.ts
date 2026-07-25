@@ -8,6 +8,7 @@ export const LOCAL_STORAGE_KEYS = {
   VIDEO_URL: "video_url",
   TRANSCRIPT_DATA: "transcript_data",
   VOCABULARY: "transcripter_vocabulary",
+  ACTIVE_CUE: "active_cue",
 };
 
 export const LANGUAGES = {

@@ -11,10 +11,9 @@ function AddForm() {
 
   const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName } = useAppContext();
 
-  //
   function onSubmitTextareaForm(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    console.log("onSubmitTextareaForm");
+    console.log("on submit textarea form");
   }
 
   useEffect(() => {
@@ -30,6 +29,7 @@ function AddForm() {
         Add learning material from a <span className="text-[cyan]">subtitle file</span> or <span className="text-[cyan]">pasted text</span>
       </h2>
 
+      {/* 1 */}
       {/* YT VIDEO URL */}
       <div className="max-w-xl mx-auto px-6 mb-6">
         <label htmlFor="video-url" className="mb-2 block font-mono text-sm text-[cyan]">
@@ -57,6 +57,7 @@ function AddForm() {
         <div className="text-red-500 ml-2 text-sm my-2">{videoUrlError}</div>
       </div>
 
+      {/* 2 */}
       {/* LANGUAGE SELECT */}
       <div className="max-w-xl mx-auto px-6 mb-8">
         <label className="mb-2 block text-sm text-[cyan]">2. Select language:</label>
@@ -79,6 +80,7 @@ function AddForm() {
         </select>
       </div>
 
+      {/* 3 */}
       {/* CHOICE TO ADD MATERIAL */}
       <div className="max-w-7xl mx-auto grid gap-8 md:grid-cols-[0.6fr_1fr]">
         <div className="col-span-2 block text-sm text-[cyan] text-center">3. Add material:</div>
