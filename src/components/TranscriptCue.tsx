@@ -1,8 +1,9 @@
 import formatSeconds from "../utils/formatSeconds.ts";
 import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
 import { useAppContext } from "../context/Context.tsx";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { LOCAL_STORAGE_KEYS } from "../constants.ts";
+import { translate2 } from "../utils/translate.ts";
 
 type Props = {
   cue: SrtCueShape | VttCueShape;
@@ -14,7 +15,8 @@ type Props = {
 };
 
 export default function TranscriptCue({ cue, index, type, activeCue, setActiveCue, setClickedCueStart }: Props) {
-  const { transcriptData, currentVideoTime } = useAppContext();
+  const { transcriptData, currentVideoTime, selectedLanguage } = useAppContext();
+  const cueRef = useRef<HTMLParagraphElement>(null);
 
   // format start time nicely
   let startTime = type === "vtt" && typeof cue.startTime === "number" ? formatSeconds(cue.startTime) : cue.startTime;
@@ -48,8 +50,41 @@ export default function TranscriptCue({ cue, index, type, activeCue, setActiveCu
 
   // ====================================
 
+  function handleMouseUp(): string | null {
+    const selection = window.getSelection(); // get global text selection
+
+    if (!selection || selection.isCollapsed) return null; // check if selection contains sth
+
+    const range = selection.getRangeAt(0); // take what text that selection contains
+
+    const cueElement = cueRef.current; // get current cue
+
+    if (!cueElement || !cueElement.contains(range.commonAncestorContainer)) {
+      // if no cue, or current cue doesn't contain the deepest DOM node containing both start and  end of the selection
+      return null;
+    }
+
+    const selectedText = selection.toString().trim(); // get selection's text
+
+    if (!selectedText) return null;
+
+    return selectedText; // selectedText will be translated
+  }
+
+  // ====================================
+
   return (
-    <p id={`cue-${index}`} className={`border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
+    <p
+      ref={cueRef}
+      onMouseUp={async () => {
+        const textToTranslate = handleMouseUp();
+        if (!textToTranslate) return;
+        const results: string[] = await translate2(textToTranslate, selectedLanguage);
+        console.log(results);
+      }}
+      id={`cue-${index}`}
+      className={`border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}
+    >
       {/* CUE START TIME */}
       <span
         onClick={() => {
@@ -61,7 +96,7 @@ export default function TranscriptCue({ cue, index, type, activeCue, setActiveCu
             setClickedCueStart(cue.startTime);
           }
         }}
-        className="mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline active:no-underline active:opacity-75"
+        className="select-none mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline active:no-underline active:opacity-75"
         title="Play at selected time"
       >
         {startTime}

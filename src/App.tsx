@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import AddForm from "./components/AddForm";
 import { useAppContext } from "./context/Context.tsx";
 import Transcript from "./components/Transcript";
-import { translate2 } from "./utils/translate.ts";
+// import { translate2 } from "./utils/translate.ts";
 
 function App() {
   const { transcriptData } = useAppContext();
@@ -14,10 +14,10 @@ function App() {
     document.title = `${APP_NAME} | ${APP_SLOGAN}`;
 
     // test
-    (async function () {
-      const res = await translate2("brillante", "es");
-      console.log(res);
-    })();
+    // (async function () {
+    //   const res = await translate2("brillante", "es");
+    //   console.log(res);
+    // })();
   }, []);
 
   return (
