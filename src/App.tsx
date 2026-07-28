@@ -24,7 +24,11 @@ function App() {
     <div className="pb-[200px]">
       <Header />
       {!transcriptData && <AddForm />}
-      {transcriptData !== null && <Transcript />}
+      {transcriptData !== null && (
+        <>
+          <Transcript />
+        </>
+      )}
     </div>
   );
 }

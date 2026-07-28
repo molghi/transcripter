@@ -36,7 +36,7 @@ export async function translate2(query: string, sourceLang: string, targetLang: 
 
   const uniqueTranslations = [...new Set(translations)];
 
-  console.log(uniqueTranslations);
+  // console.log(uniqueTranslations);
 
   return uniqueTranslations;
 }

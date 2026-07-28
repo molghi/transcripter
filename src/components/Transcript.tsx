@@ -4,12 +4,20 @@ import { useEffect, useState } from "react";
 import TranscriptCue from "./TranscriptCue.tsx";
 import YouTubePlayer from "./YouTubePlayer.tsx";
 import smoothScrollTo from "../utils/smoothScrollTo.ts";
+import TranslationTooltip from "../components/TranslationTooltip";
+
+export type SelectionPopup = {
+  text: string;
+  x: number;
+  y: number;
+} | null;
 
 export default function Transcript() {
-  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue, setActiveCue } = useAppContext();
+  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue } = useAppContext();
 
   const [isScrollBtnShown, setIsScrollBtnShown] = useState<boolean>(false);
   const [clickedCueStart, setClickedCueStart] = useState<number | null>(null);
+  const [selectionPopup, setSelectionPopup] = useState<SelectionPopup>(null);
 
   if (!transcriptData) return null;
 
@@ -28,6 +36,37 @@ export default function Transcript() {
 
   const isSRT = transcriptData.format === "srt";
   const data: any[] = isSRT ? transcriptData.data : transcriptData.data.cues;
+
+  // ===================================
+
+  function handleTextSelection() {
+    const selection = window.getSelection();
+
+    if (!selection || selection.isCollapsed) return setSelectionPopup(null);
+
+    const selectedText = selection.toString().trim();
+
+    if (!selectedText) return setSelectionPopup(null);
+
+    const range = selection.getRangeAt(0);
+    const rect = range.getBoundingClientRect();
+
+    setSelectionPopup({
+      text: selectedText,
+      // x: rect.left + rect.width / 2 + window.scrollX - 32,
+      // y: rect.top + window.scrollY - 140,
+      // x: rect.left + rect.width / 2 + window.scrollX,
+      x: rect.left + window.scrollX,
+      y: rect.top + window.scrollY - 16,
+    });
+  }
+
+  // ===================================
+
+  useEffect(() => {
+    document.addEventListener("mouseup", handleTextSelection);
+    return () => document.removeEventListener("mouseup", handleTextSelection);
+  }, []);
 
   // ============================================================================
 
@@ -92,11 +131,11 @@ export default function Transcript() {
       <div className="space-y-4 text-md leading-7">
         {isSRT && Array.isArray(data)
           ? data.map((cue, i) => {
-              return <TranscriptCue key={i} index={i} cue={cue} type="srt" activeCue={activeCue} setActiveCue={setActiveCue} setClickedCueStart={setClickedCueStart} />;
+              return <TranscriptCue key={i} index={i} cue={cue} type="srt" setClickedCueStart={setClickedCueStart} />;
             })
           : data && typeof data === "object"
             ? data.map((cue, i) => {
-                return <TranscriptCue key={i} index={i} cue={cue} type="vtt" activeCue={activeCue} setActiveCue={setActiveCue} setClickedCueStart={setClickedCueStart} />;
+                return <TranscriptCue key={i} index={i} cue={cue} type="vtt" setClickedCueStart={setClickedCueStart} />;
               })
             : ""}
       </div>
@@ -118,6 +157,8 @@ export default function Transcript() {
           Return to current subtitle
         </button>
       )}
+
+      {selectionPopup !== null && <TranslationTooltip selectionPopup={selectionPopup} />}
     </section>
   );
 }

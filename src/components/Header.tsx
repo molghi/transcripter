@@ -49,19 +49,29 @@ function Header() {
 
   // ===========================
 
+  const btns = [
+    { name: "Add", title: "Add material through file import or text input", callbackFn: resetAll },
+    { name: "Restore", title: "Restore previously saved material from local storage", callbackFn: restoreState },
+    { name: "Dictionary", title: "Browse and manage your saved words and phrases", callbackFn: () => console.log("go to Dictionary") },
+    { name: "Practice", title: "Review your saved vocabulary with spaced repetition", callbackFn: () => console.log("go to Practice") },
+  ];
+
+  // ===========================
+
   return (
-    <header className="max-w-3xl mx-auto flex items-center justify-between px-6 py-4 bg-black text-white sm:flex-nowrap flex-wrap gap-4 mb-10">
-      <h1 className="text-xl font-mono tracking-widest" title={APP_SLOGAN}>
+    <header className="max-w-4xl mx-auto flex items-center justify-between px-6 py-4 bg-black text-white md:flex-nowrap flex-wrap gap-4 mb-10">
+      <h1 className="text-xl font-mono tracking-widest select-none" title={APP_SLOGAN}>
         {APP_NAME}
       </h1>
 
-      <div className="flex gap-4">
-        <button onClick={() => resetAll()} className={BTN_STYLE} title="Add material through file import or text input" aria-label="Add material through file import or text input">
-          Add
-        </button>
-        <button onClick={() => restoreState()} className={BTN_STYLE} title="Restore previously saved material from local storage" aria-label="Restore previously saved material from local storage">
-          Restore
-        </button>
+      <div className="flex gap-4 flex-wrap sm:flex-nowrap">
+        {btns.map((btn, i) => {
+          return (
+            <button key={i} onClick={btn.callbackFn} title={btn.title} aria-label={btn.title} className={`${BTN_STYLE} select-none`}>
+              {btn.name}
+            </button>
+          );
+        })}
       </div>
     </header>
   );

@@ -38,11 +38,15 @@ type VttGeneralShape = {
   time: number;
 };
 
-// export type TranscriptData = {
-//   format: "srt" | "vtt";
-//   data: VttGeneralShape | SrtCueShape[];
-//   name: string;
-// };
+export type WordEntry = {
+  word: string;
+  sentence: string;
+  translations: string[];
+  language: string;
+  dateAdded: string;
+  videoName: string;
+  videoUrl: string;
+};
 
 export type TranscriptData =
   | {
@@ -71,6 +75,10 @@ type AppContextType = {
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   activeCue: number | null;
   setActiveCue: React.Dispatch<React.SetStateAction<number | null>>;
+  translations: string[] | null;
+  setTranslations: React.Dispatch<React.SetStateAction<string[] | null>>;
+  closestSentence: string | null;
+  setClosestSentence: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -87,8 +95,10 @@ export function AppProvider({ children }: AppProviderProps) {
   const [currentVideoTime, setCurrentVideoTime] = useState<number>(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
   const [activeCue, setActiveCue] = useState<number | null>(0);
+  const [translations, setTranslations] = useState<string[] | null>(null);
+  const [closestSentence, setClosestSentence] = useState<string | null>(null);
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================
