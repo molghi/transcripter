@@ -1,22 +1,24 @@
 declare namespace YT {
+  interface PlayerEvent {
+    target: Player;
+  }
+
+  interface OnStateChangeEvent extends PlayerEvent {
+    data: number;
+  }
+
   class Player {
     constructor(
-      elementId: string,
+      elementId: string | HTMLElement,
       options: {
         videoId: string;
         events?: {
-          onReady?: (event: unknown) => void;
-          onStateChange?: (event: { data: number }) => void;
+          onReady?: (event: PlayerEvent) => void;
+          onStateChange?: (event: OnStateChangeEvent) => void;
         };
       },
     );
 
-    getCurrentTime(): number;
-    getDuration(): number;
-    playVideo(): void;
-    pauseVideo(): void;
-    destroy(): void;
+    // ...
   }
 }
-
-export {};

@@ -8,13 +8,17 @@ declare namespace YT {
     CUED: number;
   };
 
+  interface PlayerEvent {
+    target: Player;
+  }
+
   class Player {
     constructor(
       element: string | HTMLElement,
       options: {
         videoId: string;
         events?: {
-          onReady?: (event: unknown) => void;
+          onReady?: (event: PlayerEvent) => void;
           onStateChange?: (event: { data: number }) => void;
         };
       },

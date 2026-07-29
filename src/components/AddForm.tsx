@@ -5,9 +5,11 @@ import isValidYouTubeUrl from "../utils/urlValidator";
 import { useAppContext } from "../context/Context.tsx";
 import { saveProcessedData } from "../utils/localStorageFuncs.ts";
 import { useEffect } from "react";
+import { getYoutubeVideoID } from "../utils/getYoutubeVideoID.ts";
 
 function AddForm() {
   const [videoUrlError, setVideoUrlError] = useState("");
+  const [videoUrlField, setVideoUrlField] = useState("");
 
   const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName } = useAppContext();
 
@@ -40,14 +42,16 @@ function AddForm() {
           autoFocus
           id="video-url"
           type="url"
-          value={videoUrl}
+          value={videoUrlField}
           onChange={(e) => {
             const urlIsValid = isValidYouTubeUrl(e.target.value);
             if (urlIsValid) {
-              setVideoUrl(e.target.value.trim());
+              setVideoUrlField(e.target.value.trim());
+              const videoID = getYoutubeVideoID(e.target.value.trim());
+              setVideoUrl(videoID);
               setVideoUrlError("");
             } else {
-              setVideoUrl(e.target.value.trim());
+              setVideoUrlField(e.target.value.trim());
               setVideoUrlError("Not a valid YouTube video URL");
             }
           }}

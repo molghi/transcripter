@@ -10,11 +10,18 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@lorefnon/sanscript": "^1.2.8",
+    "@sglkc/kuroshiro": "^1.0.1",
+    "@sglkc/kuroshiro-analyzer-kuromoji": "^1.0.1",
+    "hebrew-transliteration": "^2.11.0",
+    "kuromoji": "^0.1.2",
+    "pinyin-pro": "^3.28.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "srt-parser-2": "^1.2.3",
     "subsrt": "^1.1.1",
     "subtitle": "^4.2.2",
+    "transliteration": "^2.6.1",
     "webvtt-parser": "^2.2.0"
   },
   "devDependencies": {

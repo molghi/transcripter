@@ -1,5 +1,5 @@
 import { useAppContext } from "../context/Context.tsx";
-import { LANGUAGES, APP_NAME } from "../constants";
+import { LANGUAGES, APP_NAME, LOCAL_STORAGE_KEYS } from "../constants";
 import { useEffect, useState } from "react";
 import TranscriptCue from "./TranscriptCue.tsx";
 import YouTubePlayer from "./YouTubePlayer.tsx";
@@ -32,6 +32,10 @@ export default function Transcript() {
   if (videoUrl.startsWith("https://youtu.be/")) {
     youtubeID = videoUrl.split("https://youtu.be/")[1];
     youtubeID = youtubeID.split("?")[0];
+  }
+  let videoIdInLS = localStorage.getItem(LOCAL_STORAGE_KEYS.VIDEO_URL);
+  if (videoIdInLS) {
+    youtubeID = videoIdInLS;
   }
 
   const isSRT = transcriptData.format === "srt";

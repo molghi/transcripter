@@ -9,7 +9,9 @@ type YouTubePlayerProps = {
 export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlayerProps) {
   const videoElRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<YT.Player | null>(null);
-  const { setCurrentVideoTime, setIsVideoPlaying } = useAppContext();
+  const { setCurrentVideoTime, setIsVideoPlaying, setVideoDuration } = useAppContext();
+
+  const refreshSpeed = 250;
 
   // ================
 
@@ -22,6 +24,12 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
       videoId,
       // register callbacks, state transitions
       events: {
+        onReady: (event: YT.PlayerEvent) => {
+          playerRef.current = event.target;
+          const duration = event.target.getDuration();
+          // console.log(duration);
+          setVideoDuration(duration > 0 ? duration : null);
+        },
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.PLAYING) {
             console.log("Video is playing");
@@ -36,7 +44,9 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
     });
 
     // remove iframe
-    return () => playerRef.current?.destroy();
+    return () => {
+      playerRef.current?.destroy();
+    };
   }, [videoId]);
 
   // ================
@@ -44,12 +54,12 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
   // get current video time
   useEffect(() => {
     // check that video container exists
-    if (!videoElRef.current) return;
+    if (!videoElRef.current || !playerRef.current) return;
 
     const interval = setInterval(() => {
       const currentVideoTime = playerRef.current?.getCurrentTime() || 0;
       setCurrentVideoTime(currentVideoTime);
-    }, 250);
+    }, refreshSpeed);
 
     return () => clearInterval(interval);
   }, []);

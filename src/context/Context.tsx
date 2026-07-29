@@ -79,6 +79,8 @@ type AppContextType = {
   setTranslations: React.Dispatch<React.SetStateAction<string[] | null>>;
   closestSentence: string | null;
   setClosestSentence: React.Dispatch<React.SetStateAction<string | null>>;
+  videoDuration: number | null;
+  setVideoDuration: React.Dispatch<React.SetStateAction<number | null>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -97,8 +99,9 @@ export function AppProvider({ children }: AppProviderProps) {
   const [activeCue, setActiveCue] = useState<number | null>(0);
   const [translations, setTranslations] = useState<string[] | null>(null);
   const [closestSentence, setClosestSentence] = useState<string | null>(null);
+  const [videoDuration, setVideoDuration] = useState<number | null>(null);
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================
