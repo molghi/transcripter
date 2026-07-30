@@ -1,13 +1,11 @@
-import formatSeconds from "../utils/formatSeconds.ts";
-import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
-import { useAppContext } from "../context/Context.tsx";
 import { useEffect, useRef } from "react";
+import { useAppContext } from "../context/Context.tsx";
+import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
 import { LOCAL_STORAGE_KEYS } from "../constants.ts";
-import { translate2 } from "../utils/translate.ts";
-import { handleMouseUp } from "../utils/handleMouseUp.ts";
-import { getClosestSentence } from "../utils/getClosestSentence.ts";
-import { transliterateArabicAndPersian, transliterateChinese, transliterateRussian, transliterateHebrewText, transliterateGreek, transliterateHindi } from "../utils/transliterationTools.ts";
-// transliterateJapanese
+import { formatCueStartTime } from "../utils/formatSeconds.ts";
+import { defineTransliteratorFn } from "../utils/defineTransliteratorFn.ts";
+import { translateSelection } from "../utils/translateSelection.ts";
+import { defineActiveCue } from "../utils/defineActiveCue.ts";
 
 type Props = {
   cue: SrtCueShape | VttCueShape;
@@ -17,87 +15,48 @@ type Props = {
 };
 
 export default function TranscriptCue({ cue, index, type, setClickedCueStart }: Props) {
+  //
   const { transcriptData, currentVideoTime, selectedLanguage, setTranslations, activeCue, setActiveCue, setClosestSentence } = useAppContext();
+
   const cueRef = useRef<HTMLParagraphElement>(null);
 
-  const nonLatinLangs = ["ar", "fa", "zh", "ru", "he", "el", "ja", "hi"];
-  const semiticLangs = ["ar", "fa", "he"];
+  const nonLatinLangs = ["ar", "fa", "zh", "ru", "he", "el", "ja", "hi"]; // not using latin script
+  const semiticLangs = ["ar", "fa", "he"]; // written right to left
   const isNonLatinLang = nonLatinLangs.includes(selectedLanguage);
   const isSemiticLang = semiticLangs.includes(selectedLanguage);
 
-  let functionToTransliterate = null;
-  switch (selectedLanguage) {
-    case "ar":
-    case "fa":
-      functionToTransliterate = transliterateArabicAndPersian;
-      break;
-    case "zh":
-      functionToTransliterate = transliterateChinese;
-      break;
-    case "ru":
-      functionToTransliterate = transliterateRussian;
-      break;
-    case "he":
-      functionToTransliterate = transliterateHebrewText;
-      break;
-    case "el":
-      functionToTransliterate = transliterateGreek;
-      break;
-    case "ja":
-      // functionToTransliterate = transliterateJapanese;
-      functionToTransliterate = null;
-      break;
-    case "hi":
-      functionToTransliterate = transliterateHindi;
-      break;
-    default:
-      break;
-  }
+  // define fn to transliterate non-latin langs
+  const functionToTransliterate = defineTransliteratorFn(selectedLanguage);
 
   // format start time nicely
-  let startTime = type === "vtt" && typeof cue.startTime === "number" ? formatSeconds(cue.startTime) : cue.startTime;
-  startTime = String(startTime);
-  startTime = startTime.split(",")[0];
+  const startTime = formatCueStartTime(type, cue);
 
   // ====================================
 
   // set active cue
   useEffect(() => {
-    if (!transcriptData) return;
-
-    const cuesData: any[] = Array.isArray(transcriptData.data) ? transcriptData.data : transcriptData.data.cues;
-
-    const activeIndex = cuesData.findIndex((cue) => {
-      if ("startSeconds" in cue) {
-        // then it's SRT
-        return cue.startSeconds <= currentVideoTime && currentVideoTime < cue.endSeconds;
-      }
-      // then it's VTT
-      return cue.startTime <= currentVideoTime && currentVideoTime < cue.endTime;
-    });
-
-    const myActiveCue = Math.max(0, activeIndex); // cannot be less than 0
+    const myActiveCue: number | null = defineActiveCue(transcriptData, currentVideoTime);
+    if (myActiveCue === null) return;
     setActiveCue(myActiveCue);
     localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(myActiveCue));
   }, [currentVideoTime, transcriptData]);
 
   // ====================================
 
+  const translate = async (event: React.MouseEvent<HTMLParagraphElement>) => {
+    const res = await translateSelection(event, cueRef.current, selectedLanguage);
+    if (!res) return;
+
+    const { results: translationResults, enclosingSentence } = res;
+
+    setTranslations(translationResults);
+    setClosestSentence(enclosingSentence);
+  };
+
+  // ====================================
+
   return (
-    <p
-      ref={cueRef}
-      onMouseUp={async (e) => {
-        if (!cueRef.current) return;
-        const textToTranslate = handleMouseUp(cueRef.current);
-        const enclosingSentence = getClosestSentence(e, textToTranslate || "");
-        setClosestSentence(enclosingSentence || "");
-        if (!textToTranslate) return;
-        const results: string[] = await translate2(textToTranslate, selectedLanguage);
-        setTranslations(results);
-      }}
-      id={`cue-${index}`}
-      className={`flex gap-4 border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}
-    >
+    <p ref={cueRef} onMouseUp={translate} id={`cue-${index}`} className={`flex gap-4 border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
       {/* CUE START TIME */}
       <span
         onClick={() => {

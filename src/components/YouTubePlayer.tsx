@@ -7,29 +7,31 @@ type YouTubePlayerProps = {
 };
 
 export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlayerProps) {
-  const videoElRef = useRef<HTMLDivElement | null>(null);
-  const playerRef = useRef<YT.Player | null>(null);
+  //
   const { setCurrentVideoTime, setIsVideoPlaying, setVideoDuration } = useAppContext();
 
-  const refreshSpeed = 250;
+  const videoElRef = useRef<HTMLDivElement | null>(null);
+  const playerRef = useRef<YT.Player | null>(null);
 
-  // ================
+  const timerRefreshSpeed = 250;
 
-  // create YT iframe
-  useEffect(() => {
-    if (!videoElRef.current) return;
+  // ============================================================================
 
-    // create a YouTube Player instance -- videoElRef.current is video container
-    playerRef.current = new window.YT.Player(videoElRef.current!, {
+  const createYTplayer = () => {
+    return new window.YT.Player(videoElRef.current!, {
       videoId,
+
       // register callbacks, state transitions
       events: {
+        // on ready: assign player el, set duration
         onReady: (event: YT.PlayerEvent) => {
           playerRef.current = event.target;
           const duration = event.target.getDuration();
           // console.log(duration);
           setVideoDuration(duration > 0 ? duration : null);
         },
+
+        // set when it's being played or paused
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.PLAYING) {
             console.log("Video is playing");
@@ -42,6 +44,16 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
         },
       },
     });
+  };
+
+  // ============================================================================
+
+  // create YT iframe
+  useEffect(() => {
+    if (!videoElRef.current) return;
+
+    // create a YouTube Player instance -- videoElRef.current is video container
+    playerRef.current = createYTplayer();
 
     // remove iframe
     return () => {
@@ -49,24 +61,24 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
     };
   }, [videoId]);
 
-  // ================
+  // ============================================================================
 
   // get current video time
   useEffect(() => {
     // check that video container exists
-    if (!videoElRef.current || !playerRef.current) return;
+    if (!videoElRef.current) return;
 
-    const interval = setInterval(() => {
-      const currentVideoTime = playerRef.current?.getCurrentTime() || 0;
+    const intervalTimer = setInterval(() => {
+      const currentVideoTime = playerRef.current?.getCurrentTime() ?? 0;
       setCurrentVideoTime(currentVideoTime);
-    }, refreshSpeed);
+    }, timerRefreshSpeed);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(intervalTimer);
   }, []);
 
-  // ================
+  // ============================================================================
 
-  // play at specific time (=cue start time)
+  // play at specific time (at cue start time)
   useEffect(() => {
     if (!clickedCueStart) return;
     playerRef.current?.seekTo(clickedCueStart, true);

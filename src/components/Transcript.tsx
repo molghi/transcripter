@@ -3,8 +3,11 @@ import { LANGUAGES, APP_NAME, LOCAL_STORAGE_KEYS } from "../constants";
 import { useEffect, useState } from "react";
 import TranscriptCue from "./TranscriptCue.tsx";
 import YouTubePlayer from "./YouTubePlayer.tsx";
-import smoothScrollTo from "../utils/smoothScrollTo.ts";
 import TranslationTooltip from "../components/TranslationTooltip";
+import { handleTextSelection } from "../utils/handleTextSelection.ts";
+import { autoScrollToActiveCue } from "../utils/autoScrollToActiveCue.ts";
+import { handleScroll } from "../utils/handleScroll.ts";
+import { returnToActiveCue } from "../utils/returnToActiveCue.ts";
 
 export type SelectionPopup = {
   text: string;
@@ -13,7 +16,7 @@ export type SelectionPopup = {
 } | null;
 
 export default function Transcript() {
-  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue } = useAppContext();
+  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue, currentVideoTime } = useAppContext();
 
   const [isScrollBtnShown, setIsScrollBtnShown] = useState<boolean>(false);
   const [clickedCueStart, setClickedCueStart] = useState<number | null>(null);
@@ -27,7 +30,7 @@ export default function Transcript() {
     flag = LANGUAGES[selectedLanguage as keyof typeof LANGUAGES].flag;
   }
 
-  // get YT ivideo video ID
+  // get YT video ID
   let youtubeID = "";
   if (videoUrl.startsWith("https://youtu.be/")) {
     youtubeID = videoUrl.split("https://youtu.be/")[1];
@@ -43,33 +46,10 @@ export default function Transcript() {
 
   // ===================================
 
-  function handleTextSelection() {
-    const selection = window.getSelection();
-
-    if (!selection || selection.isCollapsed) return setSelectionPopup(null);
-
-    const selectedText = selection.toString().trim();
-
-    if (!selectedText) return setSelectionPopup(null);
-
-    const range = selection.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-
-    setSelectionPopup({
-      text: selectedText,
-      // x: rect.left + rect.width / 2 + window.scrollX - 32,
-      // y: rect.top + window.scrollY - 140,
-      // x: rect.left + rect.width / 2 + window.scrollX,
-      x: rect.left + window.scrollX,
-      y: rect.top + window.scrollY - 16,
-    });
-  }
-
-  // ===================================
-
+  // handle text selection
   useEffect(() => {
-    document.addEventListener("mouseup", handleTextSelection);
-    return () => document.removeEventListener("mouseup", handleTextSelection);
+    document.addEventListener("mouseup", () => handleTextSelection(setSelectionPopup));
+    return () => document.removeEventListener("mouseup", () => handleTextSelection(setSelectionPopup));
   }, []);
 
   // ============================================================================
@@ -81,43 +61,21 @@ export default function Transcript() {
 
   // ============================================================================
 
-  // auto-scroll to active cue on play
+  // auto-scroll to active cue when playing video
   useEffect(() => {
     if (!isVideoPlaying) return;
-    if (activeCue === null || activeCue < 0) return;
-
-    const activeElement = document.getElementById(`cue-${activeCue}`);
-    if (!activeElement) return;
-
-    const rect = activeElement.getBoundingClientRect(); // get coords relative to viewport
-
-    const offset = window.innerHeight * 0.4; // set offset from the top
-
-    smoothScrollTo(window.scrollY + rect.top - offset); // scroll to current subtitle
-
-    // NOTE: default browser smooth-scrolling is not smooth enough in this case:
+    autoScrollToActiveCue(activeCue, currentVideoTime);
   }, [isVideoPlaying, activeCue]);
 
   // ============================================================================
 
-  // to show the btn to return to active cue
+  // show the btn to return to active cue
   useEffect(() => {
-    function handleScroll() {
-      if (activeCue === null || activeCue < 0) return;
+    const handlerFunction = () => handleScroll(activeCue, setIsScrollBtnShown);
 
-      const activeElement = document.getElementById(`cue-${activeCue}`);
-      if (!activeElement) return;
+    window.addEventListener("scroll", handlerFunction);
 
-      const rect = activeElement.getBoundingClientRect(); // get coords relative to viewport
-
-      const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
-
-      setIsScrollBtnShown(!isVisible);
-    }
-
-    window.addEventListener("scroll", handleScroll);
-
-    return () => window.removeEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handlerFunction);
   }, [activeCue]);
 
   // ============================================================================
@@ -146,18 +104,9 @@ export default function Transcript() {
 
       <YouTubePlayer videoId={youtubeID} clickedCueStart={clickedCueStart} />
 
-      {/* BTN to return to active/current subtitle */}
+      {/* BTN to return to active/current cue */}
       {isScrollBtnShown && (
-        <button
-          onClick={() => {
-            const element = document.getElementById(`cue-${activeCue}`);
-            if (!element) return;
-            const rect = element.getBoundingClientRect(); // get coords relative to viewport
-            const offset = window.innerHeight * 0.4; // set offset from the top
-            smoothScrollTo(window.scrollY + rect.top - offset); // scroll to current subtitle
-          }}
-          className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]"
-        >
+        <button onClick={() => returnToActiveCue} className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]">
           Return to current subtitle
         </button>
       )}

@@ -6,3 +6,23 @@ export default function formatSeconds(seconds: number): string {
 
   return [hours.toString().padStart(2, "0"), minutes.toString().padStart(2, "0"), secs.toString().padStart(2, "0")].join(":") + `,${milliseconds.toString().padStart(3, "0")}`;
 }
+
+// ============================================================================
+
+import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
+
+export function formatCueStartTime(type: "srt" | "vtt", cue: SrtCueShape | VttCueShape): string {
+  //
+  let startTime = "";
+
+  if (type === "vtt" && typeof cue.startTime === "number") {
+    startTime = formatSeconds(cue.startTime);
+  } else {
+    startTime = String(cue.startTime);
+  }
+
+  startTime = String(startTime);
+  startTime = startTime.split(",")[0];
+
+  return startTime;
+}
