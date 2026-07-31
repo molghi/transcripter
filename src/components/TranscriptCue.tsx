@@ -1,22 +1,21 @@
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { useAppContext } from "../context/Context.tsx";
 import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
-import { LOCAL_STORAGE_KEYS } from "../constants.ts";
 import { formatCueStartTime } from "../utils/formatSeconds.ts";
 import { defineTransliteratorFn } from "../utils/defineTransliteratorFn.ts";
 import { translateSelection } from "../utils/translateSelection.ts";
-import { defineActiveCue } from "../utils/defineActiveCue.ts";
 
 type Props = {
   cue: SrtCueShape | VttCueShape;
   index: number;
   type: "srt" | "vtt";
   setClickedCueStart: React.Dispatch<React.SetStateAction<number | null>>;
+  activeCue: number | null;
 };
 
-export default function TranscriptCue({ cue, index, type, setClickedCueStart }: Props) {
+export default function TranscriptCue({ cue, index, type, setClickedCueStart, activeCue }: Props) {
   //
-  const { transcriptData, currentVideoTime, selectedLanguage, setTranslations, activeCue, setActiveCue, setClosestSentence } = useAppContext();
+  const { selectedLanguage, setTranslations, setClosestSentence } = useAppContext();
 
   const cueRef = useRef<HTMLParagraphElement>(null);
 
@@ -33,16 +32,7 @@ export default function TranscriptCue({ cue, index, type, setClickedCueStart }: 
 
   // ====================================
 
-  // set active cue
-  useEffect(() => {
-    const myActiveCue: number | null = defineActiveCue(transcriptData, currentVideoTime);
-    if (myActiveCue === null) return;
-    setActiveCue(myActiveCue);
-    localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(myActiveCue));
-  }, [currentVideoTime, transcriptData]);
-
-  // ====================================
-
+  // on mouse up from text selection: fetch translations, set enclosing sentence
   const translate = async (event: React.MouseEvent<HTMLParagraphElement>) => {
     const res = await translateSelection(event, cueRef.current, selectedLanguage);
     if (!res) return;
@@ -60,13 +50,9 @@ export default function TranscriptCue({ cue, index, type, setClickedCueStart }: 
       {/* CUE START TIME */}
       <span
         onClick={() => {
-          if ("startSeconds" in cue) {
-            // if SRT
-            setClickedCueStart(cue.startSeconds);
-          } else {
-            // if VTT
-            setClickedCueStart(cue.startTime);
-          }
+          // if SRT and if VTT
+          const startTime = "startSeconds" in cue ? cue.startSeconds : cue.startTime;
+          setClickedCueStart(startTime);
         }}
         className="select-none mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline active:no-underline active:opacity-75"
         title="Play at selected time"

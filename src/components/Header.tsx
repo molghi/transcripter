@@ -67,7 +67,7 @@ function Header() {
       <div className="flex gap-4 flex-wrap sm:flex-nowrap">
         {btns.map((btn, i) => {
           return (
-            <button key={i} onClick={btn.callbackFn} title={btn.title} aria-label={btn.title} className={`${BTN_STYLE} select-none`}>
+            <button key={i} onClick={btn.callbackFn} title={btn.title} aria-label={btn.title} className={`${BTN_STYLE} select-none focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black`}>
               {btn.name}
             </button>
           );

@@ -1,12 +1,9 @@
 import smoothScrollTo from "../utils/smoothScrollTo.ts";
 
-export function autoScrollToActiveCue(activeCue: number | null, currentVideoTime: number) {
+export function autoScrollToActiveCue(activeCue: number | null) {
   //
 
   if (activeCue === null || activeCue < 0) return;
-
-  // console.log("activeCue", activeCue);
-  // console.log("currentVideoTime", currentVideoTime);
 
   const activeElement = document.getElementById(`cue-${activeCue}`);
   if (!activeElement) return;

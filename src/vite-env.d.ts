@@ -27,6 +27,7 @@ declare namespace YT {
     getCurrentTime(): number;
     seekTo: (seconds: number, allowSeeking: boolean) => void;
     playVideo: () => void;
+    pauseVideo: () => void;
     getDuration(): number;
     destroy(): void;
   }

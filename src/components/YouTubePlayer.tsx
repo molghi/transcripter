@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent, useRef } from "react";
 import { useAppContext } from "../context/Context.tsx";
 
 type YouTubePlayerProps = {
@@ -8,12 +8,12 @@ type YouTubePlayerProps = {
 
 export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlayerProps) {
   //
-  const { setCurrentVideoTime, setIsVideoPlaying, setVideoDuration } = useAppContext();
+  const { setCurrentVideoTime, setIsVideoPlaying, setVideoDuration, playPauseAction } = useAppContext();
 
   const videoElRef = useRef<HTMLDivElement | null>(null);
   const playerRef = useRef<YT.Player | null>(null);
 
-  const timerRefreshSpeed = 250;
+  const timerRefreshSpeed = 100;
 
   // ============================================================================
 
@@ -34,11 +34,11 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
         // set when it's being played or paused
         onStateChange: (event) => {
           if (event.data === window.YT.PlayerState.PLAYING) {
-            console.log("Video is playing");
+            console.log("Video is playing\n", new Date().toString().split("GMT")[0]);
             setIsVideoPlaying(true);
           }
           if (event.data === window.YT.PlayerState.PAUSED) {
-            console.log("Video is paused");
+            console.log("Video is paused\n", new Date().toString().split("GMT")[0]);
             setIsVideoPlaying(false);
           }
         },
@@ -78,6 +78,17 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
 
   // ============================================================================
 
+  useEffect(() => {
+    if (playPauseAction === "play") {
+      playerRef.current?.playVideo();
+    }
+    if (playPauseAction === "pause") {
+      playerRef.current?.pauseVideo();
+    }
+  }, [playPauseAction]);
+
+  // ============================================================================
+
   // play at specific time (at cue start time)
   useEffect(() => {
     if (!clickedCueStart) return;
@@ -88,7 +99,8 @@ export default function YouTubePlayer({ videoId, clickedCueStart }: YouTubePlaye
   // ============================================================================
 
   return (
-    <div className="fixed right-6 top-6 w-80">
+    // w-[500px]
+    <div className="fixed right-6 top-16 w-64 sm:w-80">
       <div className="grayscale-[0.8] contrast-125 brightness-75">
         <div id="player" ref={videoElRef} className="aspect-video h-full w-full border border-white/20" />
       </div>

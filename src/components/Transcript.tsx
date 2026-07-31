@@ -8,6 +8,7 @@ import { handleTextSelection } from "../utils/handleTextSelection.ts";
 import { autoScrollToActiveCue } from "../utils/autoScrollToActiveCue.ts";
 import { handleScroll } from "../utils/handleScroll.ts";
 import { returnToActiveCue } from "../utils/returnToActiveCue.ts";
+import { defineActiveCue } from "../utils/defineActiveCue.ts";
 
 export type SelectionPopup = {
   text: string;
@@ -16,7 +17,7 @@ export type SelectionPopup = {
 } | null;
 
 export default function Transcript() {
-  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, activeCue, currentVideoTime } = useAppContext();
+  const { transcriptData, videoUrl, selectedLanguage, videoName, isVideoPlaying, currentVideoTime, setActiveCue, activeCue } = useAppContext();
 
   const [isScrollBtnShown, setIsScrollBtnShown] = useState<boolean>(false);
   const [clickedCueStart, setClickedCueStart] = useState<number | null>(null);
@@ -44,7 +45,7 @@ export default function Transcript() {
   const isSRT = transcriptData.format === "srt";
   const data: any[] = isSRT ? transcriptData.data : transcriptData.data.cues;
 
-  // ===================================
+  // ============================================================================
 
   // handle text selection
   useEffect(() => {
@@ -61,11 +62,42 @@ export default function Transcript() {
 
   // ============================================================================
 
+  // lagging:
+
+  // set active cue
+  useEffect(() => {
+    const myActiveCue: number | null = defineActiveCue(transcriptData, currentVideoTime);
+    if (myActiveCue === null) return;
+    setActiveCue(myActiveCue);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(myActiveCue));
+  }, [currentVideoTime, transcriptData]);
+
   // auto-scroll to active cue when playing video
   useEffect(() => {
     if (!isVideoPlaying) return;
-    autoScrollToActiveCue(activeCue, currentVideoTime);
+    autoScrollToActiveCue(activeCue);
   }, [isVideoPlaying, activeCue]);
+
+  /*
+  // improvement:
+
+  // find active cue
+  const activeCue = useMemo(() => defineActiveCue(transcriptData, currentVideoTime), [transcriptData, currentVideoTime]);
+
+  // auto-scroll to active cue when playing video and active cue is truthy
+  useEffect(() => {
+    if (!isVideoPlaying || activeCue === null || activeCue < 0) return;
+
+    autoScrollToActiveCue(activeCue);
+  }, [isVideoPlaying, activeCue]);
+
+  // push to LS
+  useEffect(() => {
+    if (activeCue === null) return;
+
+    localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(activeCue));
+  }, [activeCue]);
+  */
 
   // ============================================================================
 
@@ -93,11 +125,11 @@ export default function Transcript() {
       <div className="space-y-4 text-md leading-7">
         {isSRT && Array.isArray(data)
           ? data.map((cue, i) => {
-              return <TranscriptCue key={i} index={i} cue={cue} type="srt" setClickedCueStart={setClickedCueStart} />;
+              return <TranscriptCue key={i} index={i} cue={cue} type="srt" activeCue={activeCue} setClickedCueStart={setClickedCueStart} />;
             })
           : data && typeof data === "object"
             ? data.map((cue, i) => {
-                return <TranscriptCue key={i} index={i} cue={cue} type="vtt" setClickedCueStart={setClickedCueStart} />;
+                return <TranscriptCue key={i} index={i} cue={cue} type="vtt" activeCue={activeCue} setClickedCueStart={setClickedCueStart} />;
               })
             : ""}
       </div>
@@ -106,7 +138,7 @@ export default function Transcript() {
 
       {/* BTN to return to active/current cue */}
       {isScrollBtnShown && (
-        <button onClick={() => returnToActiveCue} className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]">
+        <button onClick={() => returnToActiveCue(activeCue)} className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]">
           Return to current subtitle
         </button>
       )}
