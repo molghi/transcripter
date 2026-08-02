@@ -39,13 +39,20 @@ type VttGeneralShape = {
 };
 
 export type WordEntry = {
+  id: string;
   word: string;
-  sentence: string;
+  sentence: string; // enclosing sentence containing 'word'
   translations: string[];
+  translation: string;
+  videoTime: string; // on what HH:MM:SS it appears in video
   language: string;
-  dateAdded: string;
-  videoName: string;
+  // dateAdded: string;
+  createdAt: string;
+  modifiedAt: string;
+  videoName: string; // aka subtitle file name
   videoUrl: string;
+  nextPractice: string;
+  personalNote?: string;
 };
 
 export type TranscriptData =
@@ -75,6 +82,8 @@ type AppContextType = {
   setIsVideoPlaying: React.Dispatch<React.SetStateAction<boolean>>;
   activeCue: number | null;
   setActiveCue: React.Dispatch<React.SetStateAction<number | null>>;
+  clickedCueTime: string;
+  setClickedCueTime: React.Dispatch<React.SetStateAction<string>>;
   translations: string[] | null;
   setTranslations: React.Dispatch<React.SetStateAction<string[] | null>>;
   closestSentence: string | null;
@@ -83,6 +92,10 @@ type AppContextType = {
   setVideoDuration: React.Dispatch<React.SetStateAction<number | null>>;
   playPauseAction: "play" | "pause" | null;
   setPlayPauseAction: React.Dispatch<React.SetStateAction<"play" | "pause" | null>>;
+  isBeingFetched: boolean;
+  setIsBeingFetched: React.Dispatch<React.SetStateAction<boolean>>;
+  buttonClicked: "add" | "restore" | "dictionary" | "practice";
+  setButtonClicked: React.Dispatch<React.SetStateAction<"add" | "restore" | "dictionary" | "practice">>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -99,12 +112,15 @@ export function AppProvider({ children }: AppProviderProps) {
   const [currentVideoTime, setCurrentVideoTime] = useState<number>(0);
   const [isVideoPlaying, setIsVideoPlaying] = useState<boolean>(false);
   const [activeCue, setActiveCue] = useState<number | null>(0);
+  const [clickedCueTime, setClickedCueTime] = useState<string>("");
   const [translations, setTranslations] = useState<string[] | null>(null);
   const [closestSentence, setClosestSentence] = useState<string | null>(null);
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [playPauseAction, setPlayPauseAction] = useState<"play" | "pause" | null>(null);
+  const [isBeingFetched, setIsBeingFetched] = useState<boolean>(false);
+  const [buttonClicked, setButtonClicked] = useState<"add" | "restore" | "dictionary" | "practice">("add");
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================

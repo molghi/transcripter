@@ -5,11 +5,7 @@ import { useEffect } from "react";
 import { addToDict } from "../utils/addToDict.ts";
 
 export default function TranslationTooltip({ selectionPopup }: { selectionPopup: SelectionPopup }) {
-  const { translations, setTranslations, selectedLanguage, videoUrl, videoName, closestSentence } = useAppContext();
-
-  useEffect(() => {
-    setTranslations([""]);
-  }, []);
+  const { translations, selectedLanguage, videoUrl, videoName, closestSentence, clickedCueTime, isBeingFetched } = useAppContext();
 
   if (!translations) return null;
 
@@ -27,7 +23,7 @@ export default function TranslationTooltip({ selectionPopup }: { selectionPopup:
   `}</style>
 
       <div
-        className={`absolute w-[322px] border border-cyan-400/40 bg-black p-4 font-mono text-white/60 rounded -translate-y-full animate-[tooltip-in_160ms_ease-out]`}
+        className={`absolute w-[340px] border border-cyan-400/40 bg-black p-4 font-mono text-white/60 rounded -translate-y-full animate-[tooltip-in_160ms_ease-out]`}
         style={{
           left: selectionPopup?.x,
           top: selectionPopup?.y,
@@ -38,8 +34,8 @@ export default function TranslationTooltip({ selectionPopup }: { selectionPopup:
           <h3 className="text-xs uppercase tracking-[0.2em] text-cyan-300">Possible translations:</h3>
 
           {/* ADD TO DICT BTN */}
-          <button onClick={() => addToDict(selectionPopup, closestSentence, translations, selectedLanguage, videoName, videoUrl)} type="button" title="Add to my dictionary" className="rounded border border-cyan-400/40 px-3 py-1 text-sm uppercase tracking-wider text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white active:opacity-60">
-            Add
+          <button disabled={!isBeingFetched} onClick={() => addToDict(selectionPopup, closestSentence, translations, selectedLanguage, videoName, videoUrl, clickedCueTime)} type="button" title={isBeingFetched ? "Add to my dictionary" : "Already in dictionary"} className="rounded border border-cyan-400/40 px-3 py-1 text-sm uppercase tracking-wider text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white active:opacity-60 disabled:opacity-50 disabled:cursor-not-allowed">
+            {isBeingFetched ? "Add" : "Added"}
           </button>
         </div>
 

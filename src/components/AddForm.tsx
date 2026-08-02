@@ -6,12 +6,13 @@ import { useAppContext } from "../context/Context.tsx";
 import { saveProcessedData } from "../utils/localStorageFuncs.ts";
 import { useEffect } from "react";
 import { getYoutubeVideoID } from "../utils/getYoutubeVideoID.ts";
+import { LOCAL_STORAGE_KEYS } from "../constants.ts";
 
 function AddForm() {
   const [videoUrlError, setVideoUrlError] = useState("");
   const [videoUrlField, setVideoUrlField] = useState("");
 
-  const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName } = useAppContext();
+  const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName, setActiveCue } = useAppContext();
 
   useEffect(() => {
     // modify document title
@@ -45,6 +46,9 @@ function AddForm() {
       let cuesArr = subtitles.format === "srt" ? subtitles.data : subtitles.data.cues;
 
       saveProcessedData(videoUrl, selectedLanguage, videoName.trim(), cuesArr); // to localStorage
+
+      setActiveCue(0);
+      localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(0));
     }
   };
 

@@ -62,42 +62,21 @@ export default function Transcript() {
 
   // ============================================================================
 
-  // lagging:
-
   // set active cue
   useEffect(() => {
+    if (!isVideoPlaying) return;
     const myActiveCue: number | null = defineActiveCue(transcriptData, currentVideoTime);
+    console.log(`set active cue`, myActiveCue);
     if (myActiveCue === null) return;
     setActiveCue(myActiveCue);
     localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(myActiveCue));
-  }, [currentVideoTime, transcriptData]);
+  }, [isVideoPlaying, currentVideoTime, transcriptData]);
 
   // auto-scroll to active cue when playing video
   useEffect(() => {
     if (!isVideoPlaying) return;
     autoScrollToActiveCue(activeCue);
   }, [isVideoPlaying, activeCue]);
-
-  /*
-  // improvement:
-
-  // find active cue
-  const activeCue = useMemo(() => defineActiveCue(transcriptData, currentVideoTime), [transcriptData, currentVideoTime]);
-
-  // auto-scroll to active cue when playing video and active cue is truthy
-  useEffect(() => {
-    if (!isVideoPlaying || activeCue === null || activeCue < 0) return;
-
-    autoScrollToActiveCue(activeCue);
-  }, [isVideoPlaying, activeCue]);
-
-  // push to LS
-  useEffect(() => {
-    if (activeCue === null) return;
-
-    localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(activeCue));
-  }, [activeCue]);
-  */
 
   // ============================================================================
 

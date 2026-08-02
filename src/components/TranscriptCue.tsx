@@ -1,9 +1,12 @@
 import { useRef } from "react";
 import { useAppContext } from "../context/Context.tsx";
-import type { SrtCueShape, VttCueShape } from "../context/Context.tsx";
+import type { SrtCueShape, VttCueShape, WordEntry } from "../context/Context.tsx";
 import { formatCueStartTime } from "../utils/formatSeconds.ts";
 import { defineTransliteratorFn } from "../utils/defineTransliteratorFn.ts";
 import { translateSelection } from "../utils/translateSelection.ts";
+import { findDictionaryEntry } from "../utils/findDictionaryEntry.ts";
+import { handleMouseUp } from "../utils/handleMouseUp.ts";
+import { LOCAL_STORAGE_KEYS } from "../constants.ts";
 
 type Props = {
   cue: SrtCueShape | VttCueShape;
@@ -15,7 +18,7 @@ type Props = {
 
 export default function TranscriptCue({ cue, index, type, setClickedCueStart, activeCue }: Props) {
   //
-  const { selectedLanguage, setTranslations, setClosestSentence } = useAppContext();
+  const { selectedLanguage, setTranslations, setClosestSentence, setClickedCueTime, setIsBeingFetched } = useAppContext();
 
   const cueRef = useRef<HTMLParagraphElement>(null);
 
@@ -33,14 +36,28 @@ export default function TranscriptCue({ cue, index, type, setClickedCueStart, ac
   // ====================================
 
   // on mouse up from text selection: fetch translations, set enclosing sentence
-  const translate = async (event: React.MouseEvent<HTMLParagraphElement>) => {
-    const res = await translateSelection(event, cueRef.current, selectedLanguage);
-    if (!res) return;
+  const translate = async (event: React.MouseEvent<HTMLParagraphElement>): Promise<void> => {
+    // search my dict before sending API req
+    const dictEntries = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.VOCABULARY) ?? "[]");
+    const textSelection = cueRef.current ? handleMouseUp(cueRef.current) : null;
+    const foundEntry: WordEntry | null = findDictionaryEntry(dictEntries, selectedLanguage, textSelection);
 
-    const { results: translationResults, enclosingSentence } = res;
+    const clickedCueStartTime = event.currentTarget.closest("p")?.querySelector("span")?.textContent ?? "";
+    setClickedCueTime(clickedCueStartTime);
 
-    setTranslations(translationResults);
-    setClosestSentence(enclosingSentence);
+    setTranslations([""]);
+    if (foundEntry) {
+      setIsBeingFetched(false);
+      setTranslations(foundEntry.translations);
+      setClosestSentence(foundEntry.sentence);
+    } else {
+      setIsBeingFetched(true);
+      const res = await translateSelection(event, cueRef.current, selectedLanguage);
+      if (!res) return;
+      const { results: translationResults, enclosingSentence } = res;
+      setTranslations(translationResults);
+      setClosestSentence(enclosingSentence);
+    }
   };
 
   // ====================================

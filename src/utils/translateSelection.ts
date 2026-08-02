@@ -13,6 +13,7 @@ export async function translateSelection(e: React.MouseEvent<HTMLParagraphElemen
 
   if (!textToTranslate) return null;
 
+  // API req:
   const results: string[] = await translate2(textToTranslate, selectedLanguage); // translate
 
   return { results, enclosingSentence: enclosingSentence || "" };

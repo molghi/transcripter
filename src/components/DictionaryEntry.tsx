@@ -1,0 +1,89 @@
+import type { WordEntry } from "../context/Context.tsx";
+import { APP_LANGUAGES } from "../constants.ts";
+
+export default function DictionaryEntry({ data }: { data: WordEntry }) {
+  //
+
+  const language: string[] | undefined = Object.values(APP_LANGUAGES).find((arr) => Array.isArray(arr) && arr[0] === data.language);
+  const [langCode, langColor, langFlag, langName] = language ?? ["", "", "", ""];
+
+  return (
+    <>
+      <div className={`relative rounded border border-[${langColor}] bg-black/40 p-4 font-mono text-white/70 backdrop-blur-sm transition`}>
+        {/* ACTIONS */}
+        <div className="absolute top-3 right-3 flex gap-2">
+          <button type="button" title="Edit entry" className="rounded border border-cyan-400/30 px-2 py-1 text-xs text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white">
+            Edit personal note
+          </button>
+
+          <button type="button" title="Delete entry" className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 transition hover:border-red-300 hover:bg-red-400/10 hover:text-white">
+            Delete
+          </button>
+        </div>
+
+        {/* WORD */}
+        <div className="mb-4 flex items-center gap-3">
+          <span title={langName}>{langFlag}</span>
+          <h2 className={`text-lg text-[${langColor}]`}>{data.word}</h2>
+        </div>
+
+        {/* DETAILS */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+          <div className="flex items-start gap-2">
+            <span className="text-white/40">Translation:</span>
+            <span className="relative group">
+              <span className="inline-flex relative">
+                <span className="text-emerald-100 opacity-0 group-hover:opacity-100 transition-opacity duration-1000">{data.translation}</span>
+              </span>
+              <span className="absolute inset-0 px-2 py-0.5 rounded-sm border border-gray-300/30 bg-gradient-to-b from-gray-500/50 to-gray-700/90 backdrop-blur-[1px] pointer-events-none group-hover:opacity-0 transition-opacity duration-700 overflow-hidden">
+                <span className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_6px,rgba(255,255,255,0.98)_6px,rgba(255,255,255,0.98)_12px)]"></span>
+              </span>
+            </span>
+          </div>
+
+          <div className="flex gap-2">
+            <span className="text-white/40 whitespace-nowrap">From video:</span>
+            <span>
+              <a href={`https://www.youtube.com/watch?v=${data.videoUrl}`} target="_blank" className="underline hover:no-underline" title={`Go to video: ${data.videoName}`}>
+                {data.videoName.slice(0, 43).trim() + "..."}
+              </a>
+            </span>
+          </div>
+
+          <div className="flex gap-2">
+            <span className="text-white/40 whitespace-nowrap">In sentence:</span>
+            <span>{data.sentence}</span>
+          </div>
+
+          <div className="flex gap-2">
+            <span className="text-white/40">Appears at:</span>
+            <span>{data.videoTime}</span>
+          </div>
+
+          {data.personalNote && (
+            <div className="flex gap-2">
+              <span className="text-white/40">Note:</span>
+              <span>{data.personalNote}</span>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <span className="text-white/40">Created:</span>
+            <span>{formatDateTime(data.createdAt)}</span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function formatDateTime(dateString: string): string {
+  return new Date(dateString).toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+}

@@ -6,9 +6,10 @@ import { useAppContext } from "./context/Context.tsx";
 import Transcript from "./components/Transcript";
 import ProgressBar from "./components/ProgressBar";
 import { handleKeyDown } from "./utils/handleKeyboard.ts";
+import Dictionary from "./components/Dictionary";
 
 function App() {
-  const { transcriptData, isVideoPlaying, setPlayPauseAction } = useAppContext();
+  const { transcriptData, isVideoPlaying, setPlayPauseAction, buttonClicked } = useAppContext();
 
   // ============================================================================
 
@@ -35,13 +36,15 @@ function App() {
   return (
     <div className="pb-[200px]">
       <Header />
-      {!transcriptData && <AddForm />}
+      {buttonClicked === "add" && <AddForm />}
       {transcriptData !== null && (
         <>
           <ProgressBar />
           <Transcript />
         </>
       )}
+      {buttonClicked === "dictionary" && <Dictionary />}
+      {buttonClicked === "practice" && <div className="text-white text-center font-mono">Practice will be here...</div>}
     </div>
   );
 }

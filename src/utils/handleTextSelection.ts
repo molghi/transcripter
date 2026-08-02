@@ -1,6 +1,6 @@
 import type { SelectionPopup } from "../components/Transcript.tsx";
 
-export function handleTextSelection(setSelectionPopup: React.Dispatch<React.SetStateAction<SelectionPopup>>) {
+export function handleTextSelection(setSelectionPopup: React.Dispatch<React.SetStateAction<SelectionPopup>>): void {
   //
   const selection = window.getSelection();
 
