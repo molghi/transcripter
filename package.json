@@ -22,7 +22,8 @@
     "subsrt": "^1.1.1",
     "subtitle": "^4.2.2",
     "transliteration": "^2.6.1",
-    "webvtt-parser": "^2.2.0"
+    "webvtt-parser": "^2.2.0",
+    "youtube-caption-extractor": "^1.10.2"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

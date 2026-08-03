@@ -12,11 +12,11 @@ export default function DictionaryEntry({ data }: { data: WordEntry }) {
       <div className={`relative rounded border border-[${langColor}] bg-black/40 p-4 font-mono text-white/70 backdrop-blur-sm transition`}>
         {/* ACTIONS */}
         <div className="absolute top-3 right-3 flex gap-2">
-          <button type="button" title="Edit entry" className="rounded border border-cyan-400/30 px-2 py-1 text-xs text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white">
-            Edit personal note
+          <button type="button" title="Edit personal note" className="rounded border border-cyan-400/30 px-2 py-1 text-xs text-green-400 transition hover:border-green-300 hover:bg-cyan-300/10 hover:text-green-200">
+            Edit note
           </button>
 
-          <button type="button" title="Delete entry" className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 transition hover:border-red-300 hover:bg-red-400/10 hover:text-white">
+          <button type="button" title="Delete entry" className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 transition hover:border-red-300 hover:bg-red-400/10 hover:text-red-100">
             Delete
           </button>
         </div>

@@ -4,7 +4,7 @@ import { useAppContext } from "../context/Context.tsx";
 import { restoreState } from "../utils/restoreState.ts";
 
 function Header() {
-  const { setSelectedLanguage, setVideoUrl, setVideoName, setTranscriptData, setActiveCue, setButtonClicked } = useAppContext();
+  const { setSelectedLanguage, setVideoUrl, setVideoName, setTranscriptData, setActiveCue, setButtonClicked, buttonClicked } = useAppContext();
 
   // ===========================
 
@@ -38,6 +38,7 @@ function Header() {
       name: "Dictionary",
       title: "Browse and manage your saved words and phrases",
       callbackFn: () => {
+        resetAll();
         setButtonClicked("dictionary");
       },
     },
@@ -45,6 +46,7 @@ function Header() {
       name: "Practice",
       title: "Review your saved vocabulary with spaced repetition",
       callbackFn: () => {
+        resetAll();
         setButtonClicked("practice");
       },
     },
@@ -53,8 +55,8 @@ function Header() {
   // ===========================
 
   return (
-    <header className="max-w-4xl mx-auto flex items-center justify-between px-6 py-4 bg-black text-white md:flex-nowrap flex-wrap gap-4 mb-10">
-      <h1 className="text-xl font-mono tracking-widest select-none" title={APP_SLOGAN}>
+    <header className="max-w-4xl mx-auto flex items-center justify-between px-6 py-4 text-white md:flex-nowrap flex-wrap gap-4 mb-10">
+      <h1 className="text-xl font-mono tracking-widest select-none text-green-400" title={APP_SLOGAN}>
         {APP_NAME}
       </h1>
 
@@ -62,7 +64,7 @@ function Header() {
       <div className="flex gap-4 flex-wrap sm:flex-nowrap">
         {btns.map((btn, i) => {
           return (
-            <button key={i} onClick={btn.callbackFn} title={btn.title} aria-label={btn.title} className={`${BTN_STYLE} select-none focus:outline-none focus:ring-1 focus:ring-cyan-500 focus:ring-offset-2 focus:ring-offset-black`}>
+            <button key={i} onClick={btn.callbackFn} title={btn.title} aria-label={btn.title} className={`${BTN_STYLE} select-none focus:outline-none focus:ring-1 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black ${buttonClicked === btn.name.toLowerCase() && "bg-green-900"}`}>
               {btn.name}
             </button>
           );

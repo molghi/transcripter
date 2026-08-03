@@ -7,6 +7,7 @@ import Transcript from "./components/Transcript";
 import ProgressBar from "./components/ProgressBar";
 import { handleKeyDown } from "./utils/handleKeyboard.ts";
 import Dictionary from "./components/Dictionary";
+import Footer from "./components/Footer";
 
 function App() {
   const { transcriptData, isVideoPlaying, setPlayPauseAction, buttonClicked } = useAppContext();
@@ -34,17 +35,23 @@ function App() {
   // ============================================================================
 
   return (
-    <div className="pb-[200px]">
-      <Header />
-      {buttonClicked === "add" && <AddForm />}
-      {transcriptData !== null && (
-        <>
-          <ProgressBar />
-          <Transcript />
-        </>
-      )}
-      {buttonClicked === "dictionary" && <Dictionary />}
-      {buttonClicked === "practice" && <div className="text-white text-center font-mono">Practice will be here...</div>}
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-1 pb-[100px]">
+        <Header />
+
+        <main>
+          {buttonClicked === "add" && <AddForm />}
+          {transcriptData !== null && (
+            <>
+              <ProgressBar />
+              <Transcript />
+            </>
+          )}
+          {buttonClicked === "dictionary" && <Dictionary />}
+          {buttonClicked === "practice" && <div className="text-white text-center font-mono">Practice will be here...</div>}
+        </main>
+      </div>
+      <Footer />
     </div>
   );
 }

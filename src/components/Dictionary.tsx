@@ -6,28 +6,29 @@ export default function Dictionary() {
   const fromLS = localStorage.getItem(LOCAL_STORAGE_KEYS.VOCABULARY);
   let dictEntries: WordEntry[] = [];
   if (!fromLS) return (dictEntries = []);
-  dictEntries = JSON.parse(fromLS); //.slice(11);
+  dictEntries = JSON.parse(fromLS).reverse();
 
   return (
     <>
       <section className="mx-auto max-w-6xl p-8 font-mono text-white/70">
         {/* HEADING */}
 
-        <h1 className="mb-10 text-xl sm:text-3xl  text-center tracking-[0.2em] uppercase text-cyan-300">Dictionary</h1>
+        {/* text-cyan-300 */}
+        <h1 className="mb-10 text-xl sm:text-3xl  text-center tracking-[0.2em] uppercase  text-green-400">Dictionary</h1>
 
         {/* TOP BAR */}
         <div className="mb-8 flex items-center justify-between rounded px-4">
           {/* ENTRY COUNT */}
 
-          <span className="text-sm uppercase tracking-[0.2em] text-white/50">{dictEntries.length} entries</span>
+          <span className="text-sm uppercase tracking-[0.2em] text-green-400/70">{dictEntries.length} entries</span>
 
           {/* FILTER */}
           <div className="flex items-center gap-3">
-            <label htmlFor="dictionary-filter" className="text-sm uppercase tracking-[0.2em] text-cyan-300">
+            <label htmlFor="dictionary-filter" className="text-sm uppercase tracking-[0.2em] text-green-400">
               Filter:
             </label>
 
-            <select id="dictionary-filter" className="rounded border border-cyan-400/30 bg-black/40 px-3 py-2 text-sm text-white/70 outline-none transition hover:border-cyan-300 focus:border-cyan-300">
+            <select id="dictionary-filter" className="cursor-pointer rounded border border-cyan-400/30 bg-black/40 px-3 py-2 text-sm text-white/70 outline-none transition hover:border-green-300 focus:border-green-300">
               <option value="">None</option>
             </select>
           </div>

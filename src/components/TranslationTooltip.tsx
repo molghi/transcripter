@@ -1,11 +1,13 @@
 // import { useEffect, useState } from "react";
 import type { SelectionPopup } from "./Transcript.tsx";
 import { useAppContext } from "../context/Context.tsx";
-import { useEffect } from "react";
+import { useState } from "react";
 import { addToDict } from "../utils/addToDict.ts";
 
 export default function TranslationTooltip({ selectionPopup }: { selectionPopup: SelectionPopup }) {
   const { translations, selectedLanguage, videoUrl, videoName, closestSentence, clickedCueTime, isBeingFetched } = useAppContext();
+
+  const [isDisabled, setIsDisabled] = useState(false);
 
   if (!translations) return null;
 
@@ -34,8 +36,17 @@ export default function TranslationTooltip({ selectionPopup }: { selectionPopup:
           <h3 className="text-xs uppercase tracking-[0.2em] text-cyan-300">Possible translations:</h3>
 
           {/* ADD TO DICT BTN */}
-          <button disabled={!isBeingFetched} onClick={() => addToDict(selectionPopup, closestSentence, translations, selectedLanguage, videoName, videoUrl, clickedCueTime)} type="button" title={isBeingFetched ? "Add to my dictionary" : "Already in dictionary"} className="rounded border border-cyan-400/40 px-3 py-1 text-sm uppercase tracking-wider text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white active:opacity-60 disabled:opacity-50 disabled:cursor-not-allowed">
-            {isBeingFetched ? "Add" : "Added"}
+          <button
+            disabled={!isBeingFetched || isDisabled}
+            onClick={() => {
+              addToDict(selectionPopup, closestSentence, translations, selectedLanguage, videoName, videoUrl, clickedCueTime);
+              setIsDisabled(true);
+            }}
+            type="button"
+            title={isBeingFetched ? "Add to my dictionary" : "Already in dictionary"}
+            className="rounded border border-cyan-400/40 px-3 py-1 text-sm uppercase tracking-wider text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-300/10 hover:text-white active:opacity-60 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isDisabled ? "Added" : isBeingFetched ? "Add" : "Added"}
           </button>
         </div>
 

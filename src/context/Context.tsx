@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, type ReactNode } from "react";
+import { LOCAL_STORAGE_KEYS } from "../constants.ts";
 
 export type SrtCueShape = {
   id: string;
@@ -96,6 +97,8 @@ type AppContextType = {
   setIsBeingFetched: React.Dispatch<React.SetStateAction<boolean>>;
   buttonClicked: "add" | "restore" | "dictionary" | "practice";
   setButtonClicked: React.Dispatch<React.SetStateAction<"add" | "restore" | "dictionary" | "practice">>;
+  animBgUrl: string | null;
+  setAnimBgUrl: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -119,8 +122,12 @@ export function AppProvider({ children }: AppProviderProps) {
   const [playPauseAction, setPlayPauseAction] = useState<"play" | "pause" | null>(null);
   const [isBeingFetched, setIsBeingFetched] = useState<boolean>(false);
   const [buttonClicked, setButtonClicked] = useState<"add" | "restore" | "dictionary" | "practice">("add");
+  const [animBgUrl, setAnimBgUrl] = useState<string | null>(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.BACKGROUND);
+    return stored ? stored : null;
+  });
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked, animBgUrl, setAnimBgUrl }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================

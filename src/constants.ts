@@ -9,6 +9,7 @@ export const LOCAL_STORAGE_KEYS = {
   TRANSCRIPT_DATA: "transcript_data",
   VOCABULARY: "transcripter_vocabulary",
   ACTIVE_CUE: "active_cue",
+  BACKGROUND: "transcripter_background",
 };
 
 export const LANGUAGES = {
@@ -207,7 +208,7 @@ export const LANGUAGES = {
   },
 } as const;
 
-export const BTN_STYLE = "border border-white/50 rounded transition hover:bg-[#333] px-4 py-2 font-mono text-sm active:bg-black";
+export const BTN_STYLE = "border border-white/50 rounded transition hover:bg-green-900 px-4 py-2 font-mono text-sm active:bg-black";
 
 export const APP_LANGUAGES: Record<string, string[]> = {
   english: ["en", "#38BDF8", "🇺🇸", "English"], // #C084FC violet
