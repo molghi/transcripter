@@ -238,3 +238,5 @@ export const APP_LANGUAGES: Record<string, string[]> = {
   //   thai: ["th", "#D7F9F1", "🇹🇭"],
   //   vietnamese: ["vi", "#E8DFF5", "🇻🇳"],
 };
+
+export const ENTRIES_PER_PAGE = 10;

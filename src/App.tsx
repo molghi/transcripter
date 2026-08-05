@@ -8,6 +8,7 @@ import ProgressBar from "./components/ProgressBar";
 import { handleKeyDown } from "./utils/handleKeyboard.ts";
 import Dictionary from "./components/Dictionary";
 import Footer from "./components/Footer";
+import SelectLanguage from "./components/SelectLanguage";
 
 function App() {
   const { transcriptData, isVideoPlaying, setPlayPauseAction, buttonClicked } = useAppContext();
@@ -48,9 +49,10 @@ function App() {
             </>
           )}
           {buttonClicked === "dictionary" && <Dictionary />}
-          {buttonClicked === "practice" && <div className="text-white text-center font-mono">Practice will be here...</div>}
+          {buttonClicked === "practice" && <SelectLanguage />}
         </main>
       </div>
+
       <Footer />
     </div>
   );

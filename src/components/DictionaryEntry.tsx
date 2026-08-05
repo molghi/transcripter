@@ -1,22 +1,36 @@
 import type { WordEntry } from "../context/Context.tsx";
 import { APP_LANGUAGES } from "../constants.ts";
 
-export default function DictionaryEntry({ data }: { data: WordEntry }) {
+export default function DictionaryEntry({ data, deleteEntry, editEntry }: { data: WordEntry; deleteEntry: Function; editEntry: Function }) {
   //
 
   const language: string[] | undefined = Object.values(APP_LANGUAGES).find((arr) => Array.isArray(arr) && arr[0] === data.language);
   const [langCode, langColor, langFlag, langName] = language ?? ["", "", "", ""];
+
+  const editNote = () => {
+    const newNote = prompt(`Enter a new personal note for this entry:`, data.personalNote)?.trim();
+    // if (!newNote) return;
+    editEntry(data.id, newNote);
+  };
+
+  const startDeletion = () => {
+    const answer = confirm(`Are you sure you want to delete this entry?\n
+${langFlag} ${langCode.toUpperCase()} — ${data.word}\n
+This action is irreversible.`);
+    if (!answer) return;
+    deleteEntry(data.id);
+  };
 
   return (
     <>
       <div className={`relative rounded border border-[${langColor}] bg-black/40 p-4 font-mono text-white/70 backdrop-blur-sm transition`}>
         {/* ACTIONS */}
         <div className="absolute top-3 right-3 flex gap-2">
-          <button type="button" title="Edit personal note" className="rounded border border-cyan-400/30 px-2 py-1 text-xs text-green-400 transition hover:border-green-300 hover:bg-cyan-300/10 hover:text-green-200">
+          <button onClick={editNote} type="button" title="Edit personal note" className="rounded border border-cyan-400/30 px-2 py-1 text-xs text-green-400 transition hover:border-green-300 hover:bg-cyan-300/10 hover:text-green-200">
             Edit note
           </button>
 
-          <button type="button" title="Delete entry" className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 transition hover:border-red-300 hover:bg-red-400/10 hover:text-red-100">
+          <button onClick={startDeletion} type="button" title="Delete entry" className="rounded border border-red-400/30 px-2 py-1 text-xs text-red-300 transition hover:border-red-300 hover:bg-red-400/10 hover:text-red-100">
             Delete
           </button>
         </div>
@@ -45,7 +59,7 @@ export default function DictionaryEntry({ data }: { data: WordEntry }) {
             <span className="text-white/40 whitespace-nowrap">From video:</span>
             <span>
               <a href={`https://www.youtube.com/watch?v=${data.videoUrl}`} target="_blank" className="underline hover:no-underline" title={`Go to video: ${data.videoName}`}>
-                {data.videoName.slice(0, 43).trim() + "..."}
+                {data.videoName.slice(0, 38).trim() + "..."}
               </a>
             </span>
           </div>

@@ -99,6 +99,10 @@ type AppContextType = {
   setButtonClicked: React.Dispatch<React.SetStateAction<"add" | "restore" | "dictionary" | "practice">>;
   animBgUrl: string | null;
   setAnimBgUrl: React.Dispatch<React.SetStateAction<string | null>>;
+  entries: WordEntry[];
+  setEntries: React.Dispatch<React.SetStateAction<WordEntry[]>>;
+  practiceLanguage: string | null;
+  setPracticeLanguage: React.Dispatch<React.SetStateAction<string | null>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -126,8 +130,13 @@ export function AppProvider({ children }: AppProviderProps) {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.BACKGROUND);
     return stored ? stored : null;
   });
+  const [entries, setEntries] = useState<WordEntry[]>(() => {
+    const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.VOCABULARY);
+    return stored ? JSON.parse(stored) : [];
+  });
+  const [practiceLanguage, setPracticeLanguage] = useState<string | null>(null);
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked, animBgUrl, setAnimBgUrl }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked, animBgUrl, setAnimBgUrl, entries, setEntries, practiceLanguage, setPracticeLanguage }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================

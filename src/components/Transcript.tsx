@@ -92,7 +92,7 @@ export default function Transcript() {
   // ============================================================================
 
   return (
-    <section className="border border-white/15 bg-black px-6 py-8 max-w-6xl mx-auto rounded font-mono">
+    <section className="border border-white/15 bg-black/50 px-6 py-8 max-w-6xl mx-auto rounded font-mono">
       <header className="mb-8 flex items-center justify-between border-b border-white/10 pb-3">
         {/* PAGE TITLE */}
         <h2 className="text-lg uppercase tracking-[0.25em] text-white flex gap-4 items-center">
@@ -117,7 +117,7 @@ export default function Transcript() {
 
       {/* BTN to return to active/current cue */}
       {isScrollBtnShown && (
-        <button onClick={() => returnToActiveCue(activeCue)} className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]">
+        <button onClick={() => returnToActiveCue(activeCue)} className="font-mono text-[red] fixed bottom-8 left-1/2 -translate-x-1/2  rounded-full border border-cyan-300/30 bg-black/70 px-5 py-2 text-sm tracking-widest text-cyan-200 backdrop-blur-lg shadow-[0_0_20px_rgba(34,211,238,0.25)] transition-all duration-300 opacity-60 hover:opacity-100 hover:border-cyan-300/70 hover:bg-cyan-950/40 hover:shadow-[0_0_30px_rgba(34,211,238,0.45)]">
           Return to current subtitle
         </button>
       )}
