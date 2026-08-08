@@ -9,9 +9,12 @@ import { handleKeyDown } from "./utils/handleKeyboard.ts";
 import Dictionary from "./components/Dictionary";
 import Footer from "./components/Footer";
 import SelectLanguage from "./components/SelectLanguage";
+import Round from "./components/Round.tsx";
+import PracticeFinalScreen from "./components/PracticeFinalScreen.tsx";
+import Notification from "./components/Notification.tsx";
 
 function App() {
-  const { transcriptData, isVideoPlaying, setPlayPauseAction, buttonClicked } = useAppContext();
+  const { transcriptData, isVideoPlaying, setPlayPauseAction, buttonClicked, practiceEntries, userAnswers, notification } = useAppContext();
 
   // ============================================================================
 
@@ -40,16 +43,26 @@ function App() {
       <div className="flex-1 pb-[100px]">
         <Header />
 
+        {notification && <Notification />}
+        {/* <Notification /> */}
+
         <main>
           {buttonClicked === "add" && <AddForm />}
+
           {transcriptData !== null && (
             <>
               <ProgressBar />
               <Transcript />
             </>
           )}
+
           {buttonClicked === "dictionary" && <Dictionary />}
-          {buttonClicked === "practice" && <SelectLanguage />}
+
+          {buttonClicked === "practice" && practiceEntries.length === 0 && <SelectLanguage />}
+
+          {practiceEntries && userAnswers && practiceEntries.length > 0 && userAnswers.length < practiceEntries.length && <Round />}
+
+          {userAnswers && userAnswers.length === practiceEntries.length && <PracticeFinalScreen />}
         </main>
       </div>
 

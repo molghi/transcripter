@@ -103,6 +103,14 @@ type AppContextType = {
   setEntries: React.Dispatch<React.SetStateAction<WordEntry[]>>;
   practiceLanguage: string | null;
   setPracticeLanguage: React.Dispatch<React.SetStateAction<string | null>>;
+  practiceEntries: WordEntry[];
+  setPracticeEntries: React.Dispatch<React.SetStateAction<WordEntry[]>>;
+  currentRound: number | null;
+  setCurrentRound: React.Dispatch<React.SetStateAction<number | null>>;
+  userAnswers: string[] | null;
+  setUserAnswers: React.Dispatch<React.SetStateAction<string[] | null>>;
+  notification: Notification | null;
+  setNotification: React.Dispatch<React.SetStateAction<Notification | null>>;
 };
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -110,6 +118,8 @@ const AppContext = createContext<AppContextType | null>(null);
 type AppProviderProps = {
   children: ReactNode;
 };
+
+export type Notification = [type: "success" | "warning" | "error", message: string];
 
 export function AppProvider({ children }: AppProviderProps) {
   const [videoUrl, setVideoUrl] = useState("");
@@ -135,8 +145,12 @@ export function AppProvider({ children }: AppProviderProps) {
     return stored ? JSON.parse(stored) : [];
   });
   const [practiceLanguage, setPracticeLanguage] = useState<string | null>(null);
+  const [practiceEntries, setPracticeEntries] = useState<WordEntry[]>([]);
+  const [currentRound, setCurrentRound] = useState<number | null>(null);
+  const [userAnswers, setUserAnswers] = useState<string[] | null>(null);
+  const [notification, setNotification] = useState<Notification | null>(null);
 
-  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked, animBgUrl, setAnimBgUrl, entries, setEntries, practiceLanguage, setPracticeLanguage }}>{children}</AppContext.Provider>;
+  return <AppContext.Provider value={{ videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, transcriptData, setTranscriptData, videoName, setVideoName, currentVideoTime, setCurrentVideoTime, isVideoPlaying, setIsVideoPlaying, activeCue, setActiveCue, translations, setTranslations, closestSentence, setClosestSentence, videoDuration, setVideoDuration, playPauseAction, setPlayPauseAction, clickedCueTime, setClickedCueTime, isBeingFetched, setIsBeingFetched, buttonClicked, setButtonClicked, animBgUrl, setAnimBgUrl, entries, setEntries, practiceLanguage, setPracticeLanguage, practiceEntries, setPracticeEntries, currentRound, setCurrentRound, userAnswers, setUserAnswers, notification, setNotification }}>{children}</AppContext.Provider>;
 }
 
 // ============================================================================

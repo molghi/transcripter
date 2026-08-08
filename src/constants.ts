@@ -240,3 +240,5 @@ export const APP_LANGUAGES: Record<string, string[]> = {
 };
 
 export const ENTRIES_PER_PAGE = 10;
+
+export const ROUNDS_PER_PRACTICE = 5;
