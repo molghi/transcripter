@@ -52,11 +52,11 @@ export default function Round() {
       {/* WORD */}
       <h2 className="mb-10 text-center text-4xl text-green-500">{currentRoundData.word}</h2>
 
-      <h2 className="mb-10 text-left text-xl text-emerald-300 italic">
-        <span className="text-gray-400 opacity-70">In sentence:</span> {currentRoundData.sentence}
+      <h2 className="mb-10 text-left text-xl text-white-200 italic">
+        <span className="text-gray-400 opacity-65">In sentence:</span> {currentRoundData.sentence}
       </h2>
 
-      <h2 className="mb-10 text-left text-sm text-gray-300 italic opacity-50 transition hover:opacity-100">
+      <h2 className="hidden mb-10 text-left text-sm text-gray-300 italic opacity-50 transition hover:opacity-100">
         <span className="text-gray-300 opacity-60 mr-2">Appeared in:</span> {currentRoundData.videoName}
       </h2>
 

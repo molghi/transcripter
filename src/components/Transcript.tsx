@@ -32,15 +32,16 @@ export default function Transcript() {
   }
 
   // get YT video ID
-  let youtubeID = "";
-  if (videoUrl.startsWith("https://youtu.be/")) {
-    youtubeID = videoUrl.split("https://youtu.be/")[1];
-    youtubeID = youtubeID.split("?")[0];
-  }
-  let videoIdInLS = localStorage.getItem(LOCAL_STORAGE_KEYS.VIDEO_URL);
-  if (videoIdInLS) {
-    youtubeID = videoIdInLS;
-  }
+  let youtubeID = videoUrl;
+  // let youtubeID = "";
+  // if (videoUrl.startsWith("https://youtu.be/")) {
+  //   youtubeID = videoUrl.split("https://youtu.be/")[1];
+  //   youtubeID = youtubeID.split("?")[0];
+  // }
+  // let videoIdInLS = localStorage.getItem(LOCAL_STORAGE_KEYS.VIDEO_URL);
+  // if (videoIdInLS) {
+  //   youtubeID = videoIdInLS;
+  // }
 
   const isSRT = transcriptData.format === "srt";
   const data: any[] = isSRT ? transcriptData.data : transcriptData.data.cues;
@@ -57,7 +58,9 @@ export default function Transcript() {
 
   // modify document title
   useEffect(() => {
-    document.title = `${APP_NAME} | ${flag} ${videoName}`;
+    // document.title = `${APP_NAME} | ${flag} ${videoName}`;
+    const key = selectedLanguage as keyof typeof LANGUAGES;
+    document.title = `${APP_NAME} | ${flag} ${LANGUAGES[key].nativeName}`;
   }, []);
 
   // ============================================================================
@@ -91,12 +94,17 @@ export default function Transcript() {
 
   // ============================================================================
 
+  const key = selectedLanguage as keyof typeof LANGUAGES;
+
+  // ============================================================================
+
   return (
     <section className="border border-white/15 bg-black/50 px-6 py-8 max-w-6xl mx-auto rounded font-mono">
       <header className="mb-8 flex items-center justify-between border-b border-white/10 pb-3">
         {/* PAGE TITLE */}
         <h2 className="text-lg uppercase tracking-[0.25em] text-white flex gap-4 items-center">
-          <span className="text-4xl">{flag}</span> <span>{videoName}</span>
+          <span className="text-4xl">{flag}</span>
+          <span>{videoName.length > 2 ? videoName : LANGUAGES[key].name} practice</span>
         </h2>
       </header>
 

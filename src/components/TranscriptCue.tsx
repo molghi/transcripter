@@ -8,8 +8,15 @@ import { findDictionaryEntry } from "../utils/findDictionaryEntry.ts";
 import { handleMouseUp } from "../utils/handleMouseUp.ts";
 import { LOCAL_STORAGE_KEYS } from "../constants.ts";
 
+type Cue = {
+  start: string;
+  dur: string;
+  text: string;
+};
+
 type Props = {
-  cue: SrtCueShape | VttCueShape;
+  // cue: SrtCueShape | VttCueShape ;
+  cue: Cue;
   index: number;
   type: "srt" | "vtt";
   setClickedCueStart: React.Dispatch<React.SetStateAction<number | null>>;
@@ -31,7 +38,16 @@ export default function TranscriptCue({ cue, index, type, setClickedCueStart, ac
   const functionToTransliterate = defineTransliteratorFn(selectedLanguage);
 
   // format start time nicely
-  const startTime = formatCueStartTime(type, cue);
+  // const startTime = formatCueStartTime(type, cue);
+
+  function formatTime(seconds: number): string {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return [h > 0 ? String(h).padStart(2, "0") : null, String(m).padStart(2, "0"), String(s).padStart(2, "0")].filter(Boolean).join(":");
+  }
+
+  const startTime = formatTime(cue.start);
 
   // ====================================
 
@@ -63,12 +79,13 @@ export default function TranscriptCue({ cue, index, type, setClickedCueStart, ac
   // ====================================
 
   return (
-    <p ref={cueRef} onMouseUp={translate} id={`cue-${index}`} className={`flex gap-4 border-l border-l-[3px] pl-4 transition ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
+    <p ref={cueRef} onMouseUp={translate} id={`cue-${index}`} className={`flex gap-4 border-l border-l-[3px] pl-4 transition hover:text-white/90 ${activeCue === index ? "text-white/90 border-[cyan]" : "text-white/40 border-white/10"}`}>
       {/* CUE START TIME */}
       <span
         onClick={() => {
           // if SRT and if VTT
-          const startTime = "startSeconds" in cue ? cue.startSeconds : cue.startTime;
+          // const startTime = "startSeconds" in cue ? cue.startSeconds : cue.startTime;
+          const startTime = Number(cue.start);
           setClickedCueStart(startTime);
         }}
         className="select-none mr-5 text-white/35 transition hover:text-white/100 cursor-pointer hover:underline active:no-underline active:opacity-75"

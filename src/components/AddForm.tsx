@@ -7,24 +7,20 @@ import { saveProcessedData } from "../utils/localStorageFuncs.ts";
 import { useEffect } from "react";
 import { getYoutubeVideoID } from "../utils/getYoutubeVideoID.ts";
 import { LOCAL_STORAGE_KEYS } from "../constants.ts";
+// import { getSubtitles } from "youtube-caption-extractor";
+// import { fetchTranscript } from "youtube-transcript";
 
 function AddForm() {
   const [videoUrlError, setVideoUrlError] = useState("");
   const [videoUrlField, setVideoUrlField] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName, setActiveCue } = useAppContext();
+  const { setTranscriptData, videoUrl, setVideoUrl, selectedLanguage, setSelectedLanguage, setVideoName, setActiveCue, setButtonClicked } = useAppContext();
 
   useEffect(() => {
     // modify document title
     document.title = `${APP_NAME} | ${APP_SLOGAN}`;
   }, []);
-
-  // ============================================================================
-
-  const onSubmitTextareaForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("on submit textarea form");
-  };
 
   // ============================================================================
 
@@ -70,11 +66,44 @@ function AddForm() {
 
   // ============================================================================
 
+  const processVideo = async () => {
+    const videoID = getYoutubeVideoID(videoUrlField);
+
+    // const transcript = await fetchTranscript(videoID);
+
+    // const res = await fetch(`http://localhost:3001/api/captions/${videoID}?lang=${selectedLanguage}`);
+
+    //const res = await fetch(`/api/captions?videoId=${videoID}&lang=${selectedLanguage}`);
+    setIsProcessing(true);
+
+    const res = await fetch(`http://localhost:3000/api/captions?videoId=${videoID}&lang=${selectedLanguage}`);
+
+    setVideoUrl(videoID);
+
+    if (!res.ok) throw new Error("Failed to fetch captions");
+
+    const captions = await res.json();
+
+    setIsProcessing(false);
+
+    setTranscriptData({ format: "srt", data: captions, name: selectedLanguage });
+
+    saveProcessedData(videoUrl, selectedLanguage, selectedLanguage, captions); // to localStorage
+
+    setActiveCue(0);
+    localStorage.setItem(LOCAL_STORAGE_KEYS.ACTIVE_CUE, String(0));
+
+    setButtonClicked("render");
+  };
+
+  // ============================================================================
+
   return (
     <section className="sm:p-8 p-4 text-white font-mono">
       <h2 className="mb-10 text-xl sm:text-2xl  text-center tracking-wide">
-        Add learning material from a <span className="text-green-400">subtitle file</span>
+        {/* Add learning material from a <span className="text-green-400">subtitle file</span> */}
         {/* or <span className="text-[cyan]">pasted text</span> */}
+        Add learning material
       </h2>
 
       {/* STEP 1 */}
@@ -94,7 +123,7 @@ function AddForm() {
       <div className="max-w-xl mx-auto px-6 mb-8">
         <label className="mb-2 block text-sm text-green-400">2. Select language:</label>
 
-        <select value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)} className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer">
+        <select disabled={!videoUrl} value={selectedLanguage} onChange={(e) => setSelectedLanguage(e.target.value)} className="border border-white/30 rounded bg-transparent px-4 py-2 w-full cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed" title={!videoUrl ? "Specify video URL to enable this step" : ""}>
           <option disabled value="">
             none selected
           </option>
@@ -107,10 +136,16 @@ function AddForm() {
         </select>
       </div>
 
+      <div className="max-w-xl mx-auto px-6 text-right">
+        <button onClick={processVideo} disabled={!videoUrl || !selectedLanguage || isProcessing} title={!videoUrl || !selectedLanguage ? "Specify video URL and language to enable this step" : ""} className={`${BTN_STYLE} cursor-pointer focus:ring-2 focus:ring-blue/50 disabled:opacity-50 disabled:cursor-not-allowed`}>
+          {!isProcessing ? "Process" : "Processing..."}
+        </button>
+      </div>
+
       {/* STEP 3 */}
       {/* ADD MATERIAL */}
       {/* <div className="max-w-7xl mx-auto grid gap-8 md:grid-cols-[0.6fr_1fr]"> */}
-      <div className="max-w-xl mx-auto px-6">
+      <div className="hidden max-w-xl mx-auto px-6">
         <div className="col-span-2 block text-sm text-green-400 mb-2">3. Add material:</div>
         {/* CHOICE 1: file picker */}
         <div className="border border-white/20 p-6 pb-8 rounded transition duration-700 hover:shadow-[inset_0_0_10px_rgba(255,255,255,0.5)]">

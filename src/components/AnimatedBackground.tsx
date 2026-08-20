@@ -82,7 +82,7 @@ export default function AnimatedBackground() {
       <div className="flex items-center justify-center gap-4 font-mono text-sm text-emerald-200 transition duration-200 opacity-20 hover:opacity-100">
         {/* absolute bottom-[30px] left-1/2 -translate-x-1/2 */}
         <label htmlFor="animated-bg" className="opacity-60">
-          background:
+          Background:
         </label>
 
         <select

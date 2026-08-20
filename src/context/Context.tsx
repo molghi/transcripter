@@ -39,6 +39,12 @@ type VttGeneralShape = {
   time: number;
 };
 
+type packageGeneralShape = {
+  dur: string;
+  start: string;
+  text: string;
+};
+
 export type WordEntry = {
   id: string;
   word: string;
@@ -95,8 +101,8 @@ type AppContextType = {
   setPlayPauseAction: React.Dispatch<React.SetStateAction<"play" | "pause" | null>>;
   isBeingFetched: boolean;
   setIsBeingFetched: React.Dispatch<React.SetStateAction<boolean>>;
-  buttonClicked: "add" | "restore" | "dictionary" | "practice";
-  setButtonClicked: React.Dispatch<React.SetStateAction<"add" | "restore" | "dictionary" | "practice">>;
+  buttonClicked: "add" | "restore" | "dictionary" | "practice" | "render";
+  setButtonClicked: React.Dispatch<React.SetStateAction<"add" | "restore" | "dictionary" | "practice" | "render">>;
   animBgUrl: string | null;
   setAnimBgUrl: React.Dispatch<React.SetStateAction<string | null>>;
   entries: WordEntry[];
@@ -135,7 +141,7 @@ export function AppProvider({ children }: AppProviderProps) {
   const [videoDuration, setVideoDuration] = useState<number | null>(null);
   const [playPauseAction, setPlayPauseAction] = useState<"play" | "pause" | null>(null);
   const [isBeingFetched, setIsBeingFetched] = useState<boolean>(false);
-  const [buttonClicked, setButtonClicked] = useState<"add" | "restore" | "dictionary" | "practice">("add");
+  const [buttonClicked, setButtonClicked] = useState<"add" | "restore" | "dictionary" | "practice" | "render">("add");
   const [animBgUrl, setAnimBgUrl] = useState<string | null>(() => {
     const stored = localStorage.getItem(LOCAL_STORAGE_KEYS.BACKGROUND);
     return stored ? stored : null;

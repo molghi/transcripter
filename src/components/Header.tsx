@@ -4,7 +4,7 @@ import { useAppContext } from "../context/Context.tsx";
 import { restoreState } from "../utils/restoreState.ts";
 
 function Header() {
-  const { setSelectedLanguage, setVideoUrl, setVideoName, setTranscriptData, setActiveCue, setButtonClicked, buttonClicked } = useAppContext();
+  const { setSelectedLanguage, setVideoUrl, setVideoName, setTranscriptData, setActiveCue, setButtonClicked, buttonClicked, setPracticeLanguage, setPracticeEntries, setCurrentRound, setUserAnswers } = useAppContext();
 
   // ===========================
 
@@ -17,34 +17,46 @@ function Header() {
 
   // ===========================
 
+  function resetPractice() {
+    setPracticeLanguage(null);
+    setPracticeEntries([]);
+    setCurrentRound(null);
+    setUserAnswers(null);
+  }
+
+  // ===========================
+
   const btns = [
     {
       name: "Add",
-      title: "Add material through file import or text input",
+      title: "Add material through pasting YouTube URL",
       callbackFn: () => {
         resetAll();
+        resetPractice();
         setButtonClicked("add");
       },
     },
     {
       name: "Restore",
-      title: "Restore previously saved material from local storage",
+      title: "Restore previously saved material from last practice session",
       callbackFn: () => {
         restoreState(setVideoUrl, setSelectedLanguage, setVideoName, setTranscriptData, setActiveCue);
+        resetPractice();
         setButtonClicked("restore");
       },
     },
     {
       name: "Dictionary",
-      title: "Browse and manage your saved words and phrases",
+      title: "Browse and manage saved words and phrases",
       callbackFn: () => {
         resetAll();
+        resetPractice();
         setButtonClicked("dictionary");
       },
     },
     {
       name: "Practice",
-      title: "Review your saved vocabulary with spaced repetition",
+      title: "Review saved vocabulary with spaced repetition",
       callbackFn: () => {
         resetAll();
         setButtonClicked("practice");

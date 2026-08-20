@@ -1,7 +1,7 @@
 import DictionaryEntry from "./DictionaryEntry";
 import { LOCAL_STORAGE_KEYS, LANGUAGES, ENTRIES_PER_PAGE } from "../constants";
 import type { WordEntry } from "../context/Context.tsx";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Pagination from "./Pagination";
 import { useAppContext } from "../context/Context.tsx";
 
@@ -18,6 +18,13 @@ export default function Dictionary() {
 
   let filteredEntries: WordEntry[] = [];
   let paginatedEntries: WordEntry[] = [];
+
+  // ====================================
+
+  useEffect(() => {
+    let entriesInLS: WordEntry[] = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEYS.VOCABULARY) || "[]");
+    entriesInLS!.length > entries.length && setEntries(entriesInLS);
+  }, []);
 
   // ====================================
 
@@ -116,7 +123,7 @@ export default function Dictionary() {
         </div>
 
         {/* ENTRIES */}
-        <div className="space-y-6">{paginatedEntries.length > 0 ? paginatedEntries.map((dictEntry) => <DictionaryEntry key={dictEntry.id} data={dictEntry} deleteEntry={deleteEntry} editEntry={editEntry} />) : <div className="text-center">No entries</div>}</div>
+        <div className="space-y-6">{paginatedEntries.length > 0 ? paginatedEntries.map((dictEntry) => <DictionaryEntry key={dictEntry.id} data={dictEntry} deleteEntry={deleteEntry} editEntry={editEntry} />) : <div className="text-center my-6">No entries</div>}</div>
 
         {/* PAGINATION */}
         {filteredEntries.length > 10 && <Pagination filteredEntries={filteredEntries} currentPage={currentPage} setCurrentPage={setCurrentPage} />}

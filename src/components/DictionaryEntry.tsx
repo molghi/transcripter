@@ -42,7 +42,7 @@ This action is irreversible.`);
         </div>
 
         {/* DETAILS */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm">
           <div className="flex items-start gap-2">
             <span className="text-white/40">Translation:</span>
             <span className="relative group">
@@ -55,11 +55,12 @@ This action is irreversible.`);
             </span>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 min-w-[350px]">
             <span className="text-white/40 whitespace-nowrap">From video:</span>
             <span>
-              <a href={`https://www.youtube.com/watch?v=${data.videoUrl}`} target="_blank" className="underline hover:no-underline" title={`Go to video: ${data.videoName}`}>
-                {data.videoName.slice(0, 38).trim() + "..."}
+              <a href={`https://www.youtube.com/watch?v=${data.videoUrl}`} target="_blank" className="underline hover:no-underline" title={`Go to video: https://youtu.be/${data.videoUrl}`}>
+                {/* {data.videoName.slice(0, 38).trim() + "..."} */}
+                {`https://youtu.be/${data.videoUrl}`}
               </a>
             </span>
           </div>
@@ -81,8 +82,8 @@ This action is irreversible.`);
             </div>
           )}
 
-          <div className="flex gap-2">
-            <span className="text-white/40">Created:</span>
+          <div className="flex gap-2 text-[12px] opacity-30 transition duration-500 hover:opacity-100">
+            <span className="text-white/50">Created:</span>
             <span>{formatDateTime(data.createdAt)}</span>
           </div>
         </div>

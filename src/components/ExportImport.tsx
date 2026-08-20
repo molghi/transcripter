@@ -3,7 +3,7 @@ import { useAppContext } from "../context/Context.tsx";
 import type { WordEntry } from "../context/Context.tsx";
 
 export default function ExportImport() {
-  const {} = useAppContext();
+  const { setNotification } = useAppContext();
 
   // pull from LS and trigger browser download
   function exportEntries() {
@@ -61,11 +61,12 @@ export default function ExportImport() {
 
         const importedEntries = parsed;
 
-        // reset createdAt and modifiedAt for each
+        // reset createdAt and modifiedAt for every imported entry
         const importedEntriesWithNewDates = importedEntries.map((entry) => ({
           ...entry,
           createdAt: now,
           modifiedAt: now,
+          nextPractice: "",
         }));
 
         // merge entries:
@@ -84,11 +85,9 @@ export default function ExportImport() {
           updatedEntries = importedEntriesWithNewDates;
         }
 
-        // setEntries(updatedEntries);
+        localStorage.setItem(LOCAL_STORAGE_KEYS.VOCABULARY, JSON.stringify(updatedEntries));
+        setNotification(["success", "Entries imported!"]);
         window.scrollTo({ top: 0, behavior: "smooth" });
-        // setIsNotificationShown(true);
-        // setNotificationContent(["success", "Imported successfully!"]);
-        // setActiveView("view");
       } catch {
         throw new Error("Failed to import entries.");
       }
@@ -125,14 +124,11 @@ export default function ExportImport() {
 
   return (
     <div className="flex gap-6 font-mono text-sm opacity-20 transition hover:opacity-100 justify-center">
-      {/* fixed bottom-6 right-6  */}
       <button onClick={() => exportEntries()} title="Export your entries data" className={` border-dashed border-emerald-600`}>
-        {/* className="rounded border border-emerald-500/30 bg-emerald-900/10 px-4 py-1 text-emerald-100 transition hover:bg-emerald-500/10" */}
         Export
       </button>
 
       <button onClick={() => importEntries()} title="Restore previously exported entries data" className={` border-dashed border-emerald-600`}>
-        {/* className="rounded border border-cyan-500/30 bg-cyan-900/10 px-4 py-1 text-cyan-100 transition hover:bg-cyan-500/10" */}
         Import
       </button>
     </div>

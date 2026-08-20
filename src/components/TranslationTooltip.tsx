@@ -40,6 +40,7 @@ export default function TranslationTooltip({ selectionPopup }: { selectionPopup:
             disabled={!isBeingFetched || isDisabled}
             onClick={() => {
               addToDict(selectionPopup, closestSentence, translations, selectedLanguage, videoName, videoUrl, clickedCueTime);
+
               setIsDisabled(true);
             }}
             type="button"
